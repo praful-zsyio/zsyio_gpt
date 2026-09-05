@@ -7,12 +7,34 @@
     --color-bg-base: #06070a;
     --color-panel-bg: rgba(12, 14, 20, 0.75);
     --color-border: rgba(255, 255, 255, 0.08);
+    --sat: env(safe-area-inset-top, 0px);
+    --sab: env(safe-area-inset-bottom, 0px);
+    --sal: env(safe-area-inset-left, 0px);
+    --sar: env(safe-area-inset-right, 0px);
+  }
+
+  html {
+    height: -webkit-fill-available;
   }
 
   body {
     background-color: #06070a;
     color: #e2e8f0;
     font-family: 'Plus Jakarta Sans', 'Outfit', sans-serif;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-overflow-scrolling: touch;
+    min-height: 100vh;
+    min-height: 100dvh;
+    min-height: -webkit-fill-available;
+  }
+
+  /* Prevent iOS Safari auto-zoom on input focus */
+  @media screen and (max-width: 768px) {
+    input:not([type='range']):not([type='checkbox']):not([type='radio']),
+    textarea,
+    select {
+      font-size: 16px !important;
+    }
   }
 
   /* Custom scrollbar */
@@ -109,5 +131,35 @@
                 radial-gradient(circle at 80% 25%, rgba(138, 43, 226, 0.15) 0%, transparent 45%),
                 radial-gradient(circle at 50% 80%, rgba(255, 0, 127, 0.1) 0%, transparent 50%),
                 #06070a;
+  }
+
+  /* Safe Area & Mobile utilities */
+  .pb-safe {
+    padding-bottom: max(0.75rem, env(safe-area-inset-bottom, 0px));
+  }
+
+  .pt-safe {
+    padding-top: max(0.5rem, env(safe-area-inset-top, 0px));
+  }
+
+  .bottom-safe {
+    bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* Enhanced iOS touch feedback */
+  .touch-press {
+    transition: transform 0.15s ease, opacity 0.15s ease;
+  }
+  .touch-press:active {
+    transform: scale(0.96);
+    opacity: 0.9;
   }
 }

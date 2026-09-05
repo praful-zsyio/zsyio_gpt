@@ -184,32 +184,32 @@ export default function ImageGenPage() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-65px)] p-4 lg:p-8 max-w-7xl mx-auto">
-      {/* Studio Header */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-8 pb-6 border-b border-white/10">
+    <div className="min-h-[calc(100dvh-65px)] p-3.5 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6 sm:mb-8 pb-4 sm:pb-6 border-b border-white/10">
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-cyan/10 border border-brand-cyan/30 text-brand-cyan text-xs font-mono mb-2">
             <Sparkles className="w-3.5 h-3.5" />
             <span>AI IMAGE GENERATION ENGINE</span>
           </div>
-          <h1 className="text-2xl lg:text-3xl font-bold text-white">Neural Image Studio</h1>
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white">Neural Image Studio</h1>
           <p className="text-xs text-slate-400 mt-1">
             Generate photorealistic visuals, 3D renders, and image-to-image variations with multi-format downloads (PNG, JPEG, WebP, PDF).
           </p>
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="px-3.5 py-1.5 rounded-xl bg-dark-900 border border-white/10 text-xs font-mono text-slate-300 flex items-center gap-2">
+          <div className="px-3 py-1.5 rounded-xl bg-dark-900 border border-white/10 text-xs font-mono text-slate-300 flex items-center gap-2">
             <Zap className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
             <span>Cost: 10 Credits / image</span>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
         {/* Left Col: Prompt & Controls */}
         <div className="lg:col-span-5 space-y-6">
-          <form onSubmit={handleGenerate} className="glass-panel p-6 rounded-3xl space-y-5">
+          <form onSubmit={handleGenerate} className="glass-panel p-4 sm:p-6 rounded-2xl sm:rounded-3xl space-y-4 sm:space-y-5">
             {/* Prompt Input */}
             <div>
               <div className="flex items-center justify-between mb-2">
@@ -220,7 +220,7 @@ export default function ImageGenPage() {
                 <button
                   type="button"
                   onClick={handleSurpriseMe}
-                  className="text-[11px] text-brand-cyan hover:underline flex items-center gap-1"
+                  className="text-[11px] text-brand-cyan hover:underline flex items-center gap-1 touch-press"
                 >
                   <Wand2 className="w-3 h-3" />
                   <span>Surprise Me</span>
@@ -232,7 +232,7 @@ export default function ImageGenPage() {
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
                 placeholder="Describe what you want to create in rich visual detail..."
-                className="w-full p-3 rounded-2xl glass-input text-xs text-white placeholder-slate-500 resize-none"
+                className="w-full p-3 rounded-2xl glass-input text-base sm:text-xs text-white placeholder-slate-500 resize-none"
               />
             </div>
 
@@ -297,7 +297,7 @@ export default function ImageGenPage() {
                 type="text"
                 value={negativePrompt}
                 onChange={(e) => setNegativePrompt(e.target.value)}
-                className="w-full p-2.5 rounded-xl glass-input text-xs text-white"
+                className="w-full p-2.5 rounded-xl glass-input text-base sm:text-xs text-white"
               />
             </div>
 
@@ -312,7 +312,7 @@ export default function ImageGenPage() {
                       key={style.id}
                       type="button"
                       onClick={() => setSelectedStyle(style.id)}
-                      className={`p-2.5 rounded-xl text-left transition-all border ${
+                      className={`p-2.5 rounded-xl text-left transition-all border touch-press ${
                         active
                           ? 'bg-brand-cyan/15 border-brand-cyan text-white shadow-glow-cyan/20'
                           : 'bg-dark-900/60 border-white/5 text-slate-400 hover:bg-white/5 hover:text-slate-200'
@@ -331,13 +331,13 @@ export default function ImageGenPage() {
             {/* Aspect Ratio */}
             <div>
               <label className="text-xs font-bold text-slate-300 mb-2 block">Aspect Ratio</label>
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {ASPECT_RATIOS.map((ar) => (
                   <button
                     key={ar.id}
                     type="button"
                     onClick={() => setAspectRatio(ar.id)}
-                    className={`py-2 px-1 rounded-xl text-xs font-bold font-mono text-center border transition-all ${
+                    className={`py-2 px-1 rounded-xl text-xs font-bold font-mono text-center border transition-all touch-press ${
                       aspectRatio === ar.id
                         ? 'bg-brand-purple/20 border-brand-purple text-white shadow-glow-purple/30'
                         : 'bg-dark-900/60 border-white/5 text-slate-400 hover:bg-white/5'
@@ -353,7 +353,7 @@ export default function ImageGenPage() {
             <button
               type="submit"
               disabled={!prompt.trim() || isGenerating}
-              className="w-full py-3 rounded-2xl btn-neon-primary text-xs flex items-center justify-center gap-2 disabled:opacity-50"
+              className="w-full py-3 rounded-2xl btn-neon-primary text-xs flex items-center justify-center gap-2 disabled:opacity-50 touch-press font-semibold"
             >
               {isGenerating ? (
                 <>
@@ -415,9 +415,9 @@ export default function ImageGenPage() {
 
       {/* Lightbox Modal with Multi-Format Download */}
       {selectedImage && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4">
-          <div className="max-w-3xl w-full glass-panel bg-dark-900 border border-white/15 rounded-3xl overflow-hidden shadow-2xl">
-            <div className="relative aspect-video max-h-[60vh] bg-dark-950 flex items-center justify-center overflow-hidden">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-3 sm:p-4">
+          <div className="max-w-3xl w-full glass-panel bg-dark-900 border border-white/15 rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl max-h-[90vh] flex flex-col">
+            <div className="relative aspect-video max-h-[50vh] sm:max-h-[60vh] bg-dark-950 flex items-center justify-center overflow-hidden">
               <img
                 src={selectedImage.url}
                 alt={selectedImage.prompt}
@@ -428,13 +428,13 @@ export default function ImageGenPage() {
                   setSelectedImage(null);
                   setDownloadFormatMenuOpen(false);
                 }}
-                className="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-black/90"
+                className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-black/70 text-white flex items-center justify-center hover:bg-black/90 touch-press"
               >
                 &times;
               </button>
             </div>
 
-            <div className="p-6">
+            <div className="p-4 sm:p-6 overflow-y-auto">
               <h4 className="text-xs font-mono text-brand-cyan mb-1 uppercase">Generated Prompt</h4>
               <p className="text-xs text-slate-200 leading-relaxed mb-4">{selectedImage.prompt}</p>
 

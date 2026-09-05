@@ -32,6 +32,7 @@ import {
   Loader2,
   FolderUp,
   X,
+  History,
 } from 'lucide-react';
 import { exportChatTranscript } from '../utils/downloader.js';
 
@@ -55,6 +56,7 @@ export default function ChatPage() {
   const [modelDropdownOpen, setModelDropdownOpen] = useState(false);
   const [exportDropdownOpen, setExportDropdownOpen] = useState(false);
   const [copiedId, setCopiedId] = useState(null);
+  const [mobileHistoryOpen, setMobileHistoryOpen] = useState(false);
 
   // CO-STAR builder fields
   const [costar, setCostar] = useState({
@@ -270,12 +272,12 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="h-[calc(100vh-65px)] flex overflow-hidden bg-dark-950 text-slate-100 relative">
-      {/* Sidebar: Chat History */}
+    <div className="h-[calc(100dvh-55px)] md:h-[calc(100dvh-65px)] flex overflow-hidden bg-dark-950 text-slate-100 relative">
+      {/* Desktop Sidebar: Chat History */}
       <aside className="w-64 lg:w-72 hidden md:flex flex-col border-r border-white/10 glass-panel bg-dark-950/80 p-4">
         <button
           onClick={handleNewChat}
-          className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl btn-neon-primary text-xs mb-4"
+          className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl btn-neon-primary text-xs mb-4 touch-press"
         >
           <Plus className="w-4 h-4" />
           <span>New Chat Session</span>
@@ -317,60 +319,155 @@ export default function ChatPage() {
         </div>
       </aside>
 
-      {/* Main Chat Area */}
-      <main className="flex-1 flex flex-col h-full overflow-hidden relative">
-        {/* Top Chat Bar: Model Selector & Multi-format Export */}
-        <div className="px-4 lg:px-6 py-3 border-b border-white/10 glass-panel flex items-center justify-between z-20">
-          <div className="relative">
+      {/* Mobile Chat History Drawer (iPhone & iPad portrait) */}
+      {mobileHistoryOpen && (
+        <div className="fixed inset-0 z-50 md:hidden flex">
+          <div
+            onClick={() => setMobileHistoryOpen(false)}
+            className="fixed inset-0 bg-black/75 backdrop-blur-sm"
+          />
+          <div className="relative w-80 max-w-[85vw] h-full bg-dark-950 border-r border-white/10 flex flex-col p-4 z-10 pt-[max(1rem,env(safe-area-inset-top,0px))] pb-[max(1rem,env(safe-area-inset-bottom,0px))] shadow-2xl">
+            <div className="flex items-center justify-between pb-3 mb-3 border-b border-white/10">
+              <div className="flex items-center gap-2">
+                <History className="w-4 h-4 text-brand-cyan" />
+                <span className="font-bold text-sm text-white">Chat History</span>
+              </div>
+              <button
+                onClick={() => setMobileHistoryOpen(false)}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/5"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
             <button
-              onClick={() => setModelDropdownOpen(!modelDropdownOpen)}
-              className="flex items-center gap-2.5 px-3.5 py-1.5 rounded-xl bg-dark-900/90 border border-white/10 hover:border-brand-cyan/40 text-xs text-white transition-all shadow-md"
+              onClick={() => {
+                handleNewChat();
+                setMobileHistoryOpen(false);
+              }}
+              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl btn-neon-primary text-xs mb-3 font-semibold touch-press"
             >
-              <Cpu className="w-4 h-4 text-brand-cyan" />
-              <span className="font-semibold">
-                {AVAILABLE_MODELS.find((m) => m.id === selectedModel)?.name}
-              </span>
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/10 text-slate-300 font-mono">
-                {AVAILABLE_MODELS.find((m) => m.id === selectedModel)?.provider}
-              </span>
-              <ChevronDown className="w-3.5 h-3.5 text-slate-400 ml-1" />
+              <Plus className="w-4 h-4" />
+              <span>New Chat Session</span>
             </button>
 
-            {/* Dropdown Menu */}
-            {modelDropdownOpen && (
-              <div className="absolute top-full left-0 mt-2 w-72 p-2 rounded-2xl glass-panel bg-dark-900/95 border border-white/15 shadow-2xl z-50">
-                <div className="text-[10px] font-mono text-slate-400 px-2 py-1 uppercase">Switch AI Foundation Model</div>
-                {AVAILABLE_MODELS.map((m) => (
-                  <button
-                    key={m.id}
-                    onClick={() => {
-                      setSelectedModel(m.id);
-                      setModelDropdownOpen(false);
-                    }}
-                    className={`w-full text-left p-2.5 rounded-xl flex items-center justify-between transition-colors ${
-                      selectedModel === m.id ? 'bg-white/10 text-brand-cyan border border-brand-cyan/30' : 'hover:bg-white/5 text-slate-300'
-                    }`}
-                  >
-                    <div>
-                      <div className="text-xs font-bold">{m.name}</div>
-                      <div className="text-[10px] text-slate-400">{m.badge}</div>
-                    </div>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-white/5 text-slate-400">{m.provider}</span>
-                  </button>
-                ))}
+            <div className="text-[10px] font-mono text-slate-500 uppercase px-1 mb-1.5">Saved Sessions ({conversations.length})</div>
+            <div className="flex-1 overflow-y-auto space-y-1 pr-1">
+              {conversations.length === 0 ? (
+                <div className="text-center text-xs text-slate-500 py-6">No saved chats yet</div>
+              ) : (
+                conversations.map((c) => {
+                  const active = c._id === currentConversationId || c.id === currentConversationId;
+                  return (
+                    <button
+                      key={c._id || c.id}
+                      onClick={() => {
+                        loadConversation(c._id || c.id);
+                        setMobileHistoryOpen(false);
+                      }}
+                      className={`w-full text-left px-3 py-2.5 rounded-xl text-xs flex items-center justify-between group transition-colors ${
+                        active ? 'bg-brand-cyan/15 text-brand-cyan font-bold border border-brand-cyan/40' : 'text-slate-300 hover:bg-white/5'
+                      }`}
+                    >
+                      <span className="truncate pr-2">{c.title || 'Untitled Chat'}</span>
+                      <span className="text-[9px] font-mono opacity-60 uppercase shrink-0">{c.model?.split('-')[0] || 'AI'}</span>
+                    </button>
+                  );
+                })
+              )}
+            </div>
+
+            <div className="pt-3 mt-auto border-t border-white/10">
+              <div className="p-2.5 rounded-2xl bg-dark-900/90 border border-white/10 text-center">
+                <div className="flex items-center justify-between text-[10px] font-mono text-brand-cyan uppercase mb-1">
+                  <span>Neural Core</span>
+                  <span className={`w-2 h-2 rounded-full ${isStreaming ? 'bg-brand-neonPink animate-ping' : 'bg-emerald-400'}`} />
+                </div>
+                <AICore3D isGenerating={isStreaming} className="h-16 w-full" />
               </div>
-            )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Main Chat Area */}
+      <main className="flex-1 flex flex-col h-full overflow-hidden relative">
+        {/* Top Chat Bar: Mobile Toggles, Model Selector & Multi-format Export */}
+        <div className="px-3 sm:px-4 lg:px-6 py-2.5 sm:py-3 border-b border-white/10 glass-panel flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 z-20">
+          <div className="flex items-center gap-1.5">
+            {/* Mobile History Drawer Toggle */}
+            <button
+              onClick={() => setMobileHistoryOpen(true)}
+              className="md:hidden p-1.5 sm:p-2 rounded-xl bg-dark-900 border border-white/10 text-slate-300 hover:text-white flex items-center gap-1 touch-press"
+              title="Chat History"
+            >
+              <History className="w-4 h-4 text-brand-cyan" />
+              <span className="text-xs font-medium hidden xs:inline">History</span>
+            </button>
+
+            {/* Mobile Quick New Chat Button */}
+            <button
+              onClick={handleNewChat}
+              className="md:hidden p-1.5 sm:p-2 rounded-xl bg-brand-cyan/15 border border-brand-cyan/30 text-brand-cyan hover:bg-brand-cyan/25 touch-press"
+              title="New Chat Session"
+            >
+              <Plus className="w-4 h-4" />
+            </button>
+
+            {/* Model Selector */}
+            <div className="relative">
+              <button
+                onClick={() => setModelDropdownOpen(!modelDropdownOpen)}
+                className="flex items-center gap-1.5 sm:gap-2.5 px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-dark-900/90 border border-white/10 hover:border-brand-cyan/40 text-xs text-white transition-all shadow-md touch-press"
+              >
+                <Cpu className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-brand-cyan shrink-0" />
+                <span className="font-semibold text-xs truncate max-w-[100px] sm:max-w-none">
+                  {AVAILABLE_MODELS.find((m) => m.id === selectedModel)?.name}
+                </span>
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/10 text-slate-300 font-mono hidden sm:inline">
+                  {AVAILABLE_MODELS.find((m) => m.id === selectedModel)?.provider}
+                </span>
+                <ChevronDown className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-slate-400 shrink-0" />
+              </button>
+
+              {/* Dropdown Menu */}
+              {modelDropdownOpen && (
+                <div className="absolute top-full left-0 mt-2 w-72 p-2 rounded-2xl glass-panel bg-dark-900/95 border border-white/15 shadow-2xl z-50">
+                  <div className="text-[10px] font-mono text-slate-400 px-2 py-1 uppercase">Switch AI Foundation Model</div>
+                  {AVAILABLE_MODELS.map((m) => (
+                    <button
+                      key={m.id}
+                      onClick={() => {
+                        setSelectedModel(m.id);
+                        setModelDropdownOpen(false);
+                      }}
+                      className={`w-full text-left p-2.5 rounded-xl flex items-center justify-between transition-colors ${
+                        selectedModel === m.id ? 'bg-white/10 text-brand-cyan border border-brand-cyan/30' : 'hover:bg-white/5 text-slate-300'
+                      }`}
+                    >
+                      <div>
+                        <div className="text-xs font-bold">{m.name}</div>
+                        <div className="text-[10px] text-slate-400">{m.badge}</div>
+                      </div>
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-white/5 text-slate-400">{m.provider}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          {/* Action Buttons */}
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             {/* Export Dropdown in All Formats */}
             <div className="relative">
               <button
                 onClick={() => setExportDropdownOpen(!exportDropdownOpen)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl glass-btn text-xs font-medium text-slate-300 hover:text-white"
+                className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl glass-btn text-xs font-medium text-slate-300 hover:text-white touch-press"
               >
                 <Download className="w-3.5 h-3.5 text-brand-cyan" />
-                <span>Export Chat</span>
+                <span className="hidden sm:inline">Export Chat</span>
+                <span className="sm:hidden">Export</span>
                 <ChevronDown className="w-3 h-3 text-slate-400" />
               </button>
 
@@ -411,47 +508,48 @@ export default function ChatPage() {
 
             <button
               onClick={() => setShowCostarModal(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-300 hover:bg-purple-500/20 text-xs font-medium transition-colors"
+              className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-300 hover:bg-purple-500/20 text-xs font-medium transition-colors touch-press"
             >
               <Wand2 className="w-3.5 h-3.5 text-purple-400" />
-              <span>CO-STAR Architect</span>
+              <span className="hidden sm:inline">CO-STAR Architect</span>
+              <span className="sm:hidden">CO-STAR</span>
             </button>
           </div>
         </div>
 
         {/* Dedicated File Upload Section on Main Page */}
-        <div className="px-4 lg:px-6 py-2.5 bg-dark-900/70 border-b border-white/10 backdrop-blur-md">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="p-1.5 rounded-lg bg-brand-cyan/10 border border-brand-cyan/30 text-brand-cyan">
-                <FolderUp className="w-4 h-4" />
+        <div className="px-3 sm:px-4 lg:px-6 py-2 bg-dark-900/70 border-b border-white/10 backdrop-blur-md">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="p-1 sm:p-1.5 rounded-lg bg-brand-cyan/10 border border-brand-cyan/30 text-brand-cyan shrink-0">
+                <FolderUp className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold text-white">Files & Knowledge Context Hub</span>
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-brand-cyan/10 border border-brand-cyan/30 text-brand-cyan font-mono">
+              <div className="min-w-0">
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <span className="text-xs font-bold text-white truncate">Knowledge Hub</span>
+                  <span className="text-[9px] sm:text-[10px] px-1.5 py-0.2 rounded-full bg-brand-cyan/10 border border-brand-cyan/30 text-brand-cyan font-mono shrink-0">
                     {attachments.length} {attachments.length === 1 ? 'file' : 'files'}
                   </span>
                 </div>
-                <div className="text-[10px] text-slate-400 hidden sm:block">
-                  Upload PDF, JPEG, PNG, MP3, MP4, WebM, CSV, TXT to ground AI reasoning
+                <div className="text-[10px] text-slate-400 hidden md:block">
+                  Ground AI reasoning with your knowledge files
                 </div>
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-brand-cyan/15 hover:bg-brand-cyan/25 border border-brand-cyan/40 text-brand-cyan hover:text-white text-xs font-medium transition-colors shadow-sm"
+                className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl bg-brand-cyan/15 hover:bg-brand-cyan/25 border border-brand-cyan/40 text-brand-cyan hover:text-white text-xs font-medium transition-colors shadow-sm touch-press"
               >
-                <Upload className="w-3.5 h-3.5" />
-                <span>Upload Files</span>
+                <Upload className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                <span>Upload<span className="hidden xs:inline"> Files</span></span>
               </button>
               <button
                 type="button"
                 onClick={() => setShowUploadSection(!showUploadSection)}
-                className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 border border-white/5 transition-colors"
+                className="p-1 sm:p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 border border-white/5 transition-colors touch-press"
                 title={showUploadSection ? 'Minimize Upload Section' : 'Expand Upload Section'}
               >
                 {showUploadSection ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
@@ -667,7 +765,7 @@ export default function ChatPage() {
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 title="Attach Document, Image, Audio, or Video (Any format)"
-                className="absolute left-3 p-2 rounded-xl text-slate-400 hover:text-brand-cyan hover:bg-white/5 transition-colors"
+                className="absolute left-2.5 sm:left-3 p-1.5 sm:p-2 rounded-xl text-slate-400 hover:text-brand-cyan hover:bg-white/5 transition-colors touch-press"
               >
                 <Paperclip className="w-4 h-4" />
               </button>
@@ -682,39 +780,40 @@ export default function ChatPage() {
                   }
                 }}
                 rows={1}
-                placeholder={`Message ${AVAILABLE_MODELS.find((m) => m.id === selectedModel)?.name}... (Attach any file: PDF, Images, Audio, Video)`}
-                className="w-full pl-12 pr-14 py-3.5 rounded-2xl glass-input text-xs text-white placeholder-slate-500 resize-none max-h-32"
+                placeholder={`Message ${AVAILABLE_MODELS.find((m) => m.id === selectedModel)?.name}...`}
+                className="w-full pl-10 sm:pl-12 pr-12 sm:pr-14 py-2.5 sm:py-3.5 rounded-2xl glass-input text-base sm:text-xs text-white placeholder-slate-500 resize-none max-h-32"
               />
 
               <button
                 type="submit"
                 disabled={!input.trim() || isStreaming}
-                className="absolute right-2.5 p-2.5 rounded-xl btn-neon-primary disabled:opacity-40 transition-transform active:scale-95"
+                className="absolute right-2 sm:right-2.5 p-2 sm:p-2.5 rounded-xl btn-neon-primary disabled:opacity-40 transition-transform active:scale-95 touch-press"
               >
                 <Send className="w-4 h-4" />
               </button>
             </form>
-            <div className="flex items-center justify-between text-[11px] text-slate-500 mt-2 px-2 font-mono">
-              <span>Supports PDF, DOCX, TXT, PNG, JPG, MP3, MP4</span>
-              <span>Shift + Enter for new line</span>
-            </div>
           </div>
         </div>
       </main>
 
       {/* CO-STAR Prompt Architect Modal */}
       {showCostarModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md p-4">
-          <div className="max-w-xl w-full glass-panel bg-dark-900 border border-purple-500/30 rounded-3xl p-6 shadow-2xl">
-            <div className="flex items-center justify-between mb-4 pb-3 border-b border-white/10">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-md p-3 sm:p-4">
+          <div className="max-w-xl w-full glass-panel bg-dark-900 border border-purple-500/30 rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-2xl max-h-[85vh] flex flex-col">
+            <div className="flex items-center justify-between mb-3 pb-3 border-b border-white/10 shrink-0">
               <div className="flex items-center gap-2">
                 <Wand2 className="w-5 h-5 text-brand-purple" />
-                <h3 className="text-base font-bold text-white">CO-STAR Prompt Architect</h3>
+                <h3 className="text-sm sm:text-base font-bold text-white">CO-STAR Prompt Architect</h3>
               </div>
-              <button onClick={() => setShowCostarModal(false)} className="text-slate-400 hover:text-white">&times;</button>
+              <button
+                onClick={() => setShowCostarModal(false)}
+                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-white/5"
+              >
+                &times;
+              </button>
             </div>
 
-            <div className="space-y-3 text-xs max-h-[60vh] overflow-y-auto pr-1">
+            <div className="space-y-3 text-xs overflow-y-auto pr-1 flex-1">
               <div>
                 <label className="font-bold text-brand-cyan mb-1 block">Context (C)</label>
                 <input
@@ -722,7 +821,7 @@ export default function ChatPage() {
                   value={costar.context}
                   onChange={(e) => setCostar({ ...costar, context: e.target.value })}
                   placeholder="e.g. I am building a full-stack SaaS with React and Node.js..."
-                  className="w-full p-2.5 rounded-xl glass-input text-xs text-white"
+                  className="w-full p-2.5 rounded-xl glass-input text-base sm:text-xs text-white"
                 />
               </div>
 
@@ -733,18 +832,18 @@ export default function ChatPage() {
                   value={costar.objective}
                   onChange={(e) => setCostar({ ...costar, objective: e.target.value })}
                   placeholder="e.g. Architect an enterprise rate limiter middleware..."
-                  className="w-full p-2.5 rounded-xl glass-input text-xs text-white"
+                  className="w-full p-2.5 rounded-xl glass-input text-base sm:text-xs text-white"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="font-bold text-slate-300 mb-1 block">Style (S)</label>
                   <input
                     type="text"
                     value={costar.style}
                     onChange={(e) => setCostar({ ...costar, style: e.target.value })}
-                    className="w-full p-2 rounded-xl glass-input text-xs text-white"
+                    className="w-full p-2 rounded-xl glass-input text-base sm:text-xs text-white"
                   />
                 </div>
                 <div>
@@ -753,19 +852,19 @@ export default function ChatPage() {
                     type="text"
                     value={costar.tone}
                     onChange={(e) => setCostar({ ...costar, tone: e.target.value })}
-                    className="w-full p-2 rounded-xl glass-input text-xs text-white"
+                    className="w-full p-2 rounded-xl glass-input text-base sm:text-xs text-white"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="font-bold text-slate-300 mb-1 block">Audience (A)</label>
                   <input
                     type="text"
                     value={costar.audience}
                     onChange={(e) => setCostar({ ...costar, audience: e.target.value })}
-                    className="w-full p-2 rounded-xl glass-input text-xs text-white"
+                    className="w-full p-2 rounded-xl glass-input text-base sm:text-xs text-white"
                   />
                 </div>
                 <div>
@@ -774,22 +873,22 @@ export default function ChatPage() {
                     type="text"
                     value={costar.responseFormat}
                     onChange={(e) => setCostar({ ...costar, responseFormat: e.target.value })}
-                    className="w-full p-2 rounded-xl glass-input text-xs text-white"
+                    className="w-full p-2 rounded-xl glass-input text-base sm:text-xs text-white"
                   />
                 </div>
               </div>
             </div>
 
-            <div className="flex justify-end gap-2 mt-5 pt-3 border-t border-white/10">
+            <div className="flex justify-end gap-2 mt-4 pt-3 border-t border-white/10 shrink-0">
               <button
                 onClick={() => setShowCostarModal(false)}
-                className="px-4 py-2 rounded-xl text-slate-400 hover:bg-white/5 text-xs"
+                className="px-3.5 py-2 rounded-xl text-slate-400 hover:bg-white/5 text-xs touch-press"
               >
                 Cancel
               </button>
               <button
                 onClick={applyCostarPrompt}
-                className="px-4 py-2 rounded-xl btn-neon-purple text-xs font-semibold"
+                className="px-4 py-2 rounded-xl btn-neon-purple text-xs font-semibold touch-press"
               >
                 Inject into Chat
               </button>

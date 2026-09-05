@@ -83,12 +83,12 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-65px)] flex items-center justify-center p-4 lg:p-8 aurora-bg relative overflow-hidden">
+    <div className="min-h-[calc(100dvh-65px)] flex items-center justify-center p-3 sm:p-6 lg:p-8 aurora-bg relative overflow-hidden">
       {/* Decorative background glow orbs */}
       <div className="absolute -top-40 -left-40 w-96 h-96 bg-brand-cyan/20 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-brand-purple/25 rounded-full blur-[140px] pointer-events-none" />
 
-      <div className="max-w-4xl w-full grid grid-cols-1 lg:grid-cols-2 glass-panel rounded-3xl border border-white/10 overflow-hidden shadow-2xl relative z-10">
+      <div className="max-w-4xl w-full grid grid-cols-1 lg:grid-cols-2 glass-panel rounded-2xl sm:rounded-3xl border border-white/10 overflow-hidden shadow-2xl relative z-10">
         
         {/* Left Col: 3D Holographic AI Showcase */}
         <div className="hidden lg:flex flex-col justify-between p-8 bg-gradient-to-b from-dark-900/90 to-dark-950/90 border-r border-white/5 relative">
@@ -143,9 +143,9 @@ export default function AuthPage() {
         </div>
 
         {/* Right Col: Auth Form */}
-        <div className="p-6 lg:p-10 flex flex-col justify-center bg-dark-900/60 backdrop-blur-xl">
-          <div className="mb-6">
-            <div className="flex items-center gap-2.5 mb-4 lg:hidden">
+        <div className="p-5 sm:p-8 lg:p-10 flex flex-col justify-center bg-dark-900/60 backdrop-blur-xl">
+          <div className="mb-5 sm:mb-6">
+            <div className="flex items-center gap-2.5 mb-3 sm:mb-4 lg:hidden">
               <img
                 src="/hero.jpeg"
                 alt="ZsyioGPT"
@@ -160,7 +160,7 @@ export default function AuthPage() {
                 <span className="text-[9px] text-slate-400 block font-mono">INTELLIGENT AI SOLUTIONS</span>
               </div>
             </div>
-            <h1 className="text-2xl font-bold text-white mb-1">
+            <h1 className="text-xl sm:text-2xl font-bold text-white mb-1">
               {isLogin ? 'Sign In to Workspace' : 'Create an Account'}
             </h1>
             <p className="text-xs text-slate-400">
@@ -199,7 +199,7 @@ export default function AuthPage() {
             type="button"
             onClick={handleGoogleAuth}
             disabled={loading}
-            className="w-full flex items-center justify-center gap-3 py-2.5 px-4 rounded-xl glass-btn text-xs font-medium text-slate-200 hover:text-white mb-5 transition-all shadow-md group"
+            className="w-full flex items-center justify-center gap-3 py-2.5 px-4 rounded-xl glass-btn text-xs font-medium text-slate-200 hover:text-white mb-5 transition-all shadow-md group touch-press"
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -229,7 +229,7 @@ export default function AuthPage() {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Alex Mercer"
-                    className="w-full pl-9 pr-3 py-2 rounded-xl glass-input text-xs text-white placeholder-slate-500"
+                    className="w-full pl-9 pr-3 py-2 rounded-xl glass-input text-base sm:text-xs text-white placeholder-slate-500"
                   />
                 </div>
               </div>
@@ -245,7 +245,7 @@ export default function AuthPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@domain.com"
-                  className="w-full pl-9 pr-3 py-2 rounded-xl glass-input text-xs text-white placeholder-slate-500"
+                  className="w-full pl-9 pr-3 py-2 rounded-xl glass-input text-base sm:text-xs text-white placeholder-slate-500"
                 />
               </div>
             </div>
@@ -260,7 +260,7 @@ export default function AuthPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full pl-9 pr-3 py-2 rounded-xl glass-input text-xs text-white placeholder-slate-500"
+                  className="w-full pl-9 pr-3 py-2 rounded-xl glass-input text-base sm:text-xs text-white placeholder-slate-500"
                 />
               </div>
             </div>
@@ -268,7 +268,7 @@ export default function AuthPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2.5 rounded-xl btn-neon-primary flex items-center justify-center gap-2 text-xs mt-2 disabled:opacity-50"
+              className="w-full py-2.5 rounded-xl btn-neon-primary flex items-center justify-center gap-2 text-xs mt-2 disabled:opacity-50 touch-press font-semibold"
             >
               <span>{loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Create Account')}</span>
               <ArrowRight className="w-3.5 h-3.5" />

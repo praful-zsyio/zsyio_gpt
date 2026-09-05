@@ -49,15 +49,15 @@ export default function UsagePage() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-65px)] p-4 lg:p-8 max-w-7xl mx-auto space-y-8">
+    <div className="min-h-[calc(100dvh-65px)] p-3.5 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6 sm:space-y-8">
       {/* Header */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-6 border-b border-white/10">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-4 sm:pb-6 border-b border-white/10">
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-cyan/10 border border-brand-cyan/30 text-brand-cyan text-xs font-mono mb-2">
             <BarChart3 className="w-3.5 h-3.5" />
             <span>WORKSPACE RESOURCE MONITOR</span>
           </div>
-          <h1 className="text-2xl lg:text-3xl font-bold text-white">Token & Credit Analytics</h1>
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white">Token & Credit Analytics</h1>
           <p className="text-xs text-slate-400 mt-1">
             Real-time breakdown of multi-model inference token metrics, credits, and gateway status.
           </p>
@@ -65,7 +65,7 @@ export default function UsagePage() {
 
         <button
           onClick={() => handleTopUp(500)}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl btn-neon-primary text-xs font-semibold shadow-glow-cyan"
+          className="flex items-center gap-2 px-4 py-2 rounded-xl btn-neon-primary text-xs font-semibold shadow-glow-cyan touch-press shrink-0"
         >
           <Plus className="w-4 h-4" />
           <span>Top-Up +500 Credits</span>
@@ -73,8 +73,8 @@ export default function UsagePage() {
       </div>
 
       {/* Top Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="glass-panel p-5 rounded-3xl border border-white/10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="glass-panel p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-white/10">
           <div className="flex items-center justify-between text-slate-400 mb-2">
             <span className="text-xs font-medium">Available Credits</span>
             <Zap className="w-4 h-4 text-amber-400 fill-amber-400" />

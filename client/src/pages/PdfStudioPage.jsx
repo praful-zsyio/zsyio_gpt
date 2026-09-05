@@ -187,22 +187,22 @@ export default function PdfStudioPage() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-65px)] p-4 lg:p-8 max-w-7xl mx-auto">
+    <div className="min-h-[calc(100dvh-65px)] p-3.5 sm:p-6 lg:p-8 max-w-7xl mx-auto">
       {/* Header */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-8 pb-6 border-b border-white/10">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6 sm:mb-8 pb-4 sm:pb-6 border-b border-white/10">
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-emerald/10 border border-brand-emerald/30 text-brand-emerald text-xs font-mono mb-2">
             <FileText className="w-3.5 h-3.5" />
             <span>PDF CREATION, EDITING & AI INTELLIGENCE</span>
           </div>
-          <h1 className="text-2xl lg:text-3xl font-bold text-white">PDF Neural Studio</h1>
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white">PDF Neural Studio</h1>
           <p className="text-xs text-slate-400 mt-1">
             Design executive PDF briefs, edit & stamp existing documents, and extract deep structured intelligence with AI.
           </p>
         </div>
 
         {/* Tab Switcher */}
-        <div className="flex items-center gap-1 bg-dark-900 p-1.5 rounded-2xl border border-white/10">
+        <div className="flex items-center gap-1 bg-dark-900 p-1.5 rounded-2xl border border-white/10 w-full md:w-auto overflow-x-auto no-scrollbar">
           {[
             { id: 'create', label: 'Create PDF', icon: Plus },
             { id: 'edit', label: 'Edit & Stamp', icon: Edit3 },
@@ -214,7 +214,7 @@ export default function PdfStudioPage() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
+                className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all touch-press ${
                   active
                     ? 'bg-gradient-to-r from-brand-emerald/20 to-brand-cyan/20 text-white border border-brand-emerald/40 shadow-glow-cyan/10'
                     : 'text-slate-400 hover:text-white'
@@ -230,9 +230,9 @@ export default function PdfStudioPage() {
 
       {/* TAB 1: CREATE PDF */}
       {activeTab === 'create' && (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
           {/* Document Builder */}
-          <div className="lg:col-span-6 glass-panel p-6 rounded-3xl space-y-4">
+          <div className="lg:col-span-6 glass-panel p-4 sm:p-6 rounded-2xl sm:rounded-3xl space-y-4">
             <h3 className="text-sm font-bold text-white flex items-center gap-2">
               <Edit3 className="w-4 h-4 text-brand-cyan" />
               <span>Document Formatter</span>
@@ -244,7 +244,7 @@ export default function PdfStudioPage() {
                 type="text"
                 value={docTitle}
                 onChange={(e) => setDocTitle(e.target.value)}
-                className="w-full p-2.5 rounded-xl glass-input text-xs text-white"
+                className="w-full p-2.5 rounded-xl glass-input text-base sm:text-xs text-white"
               />
             </div>
 
@@ -254,18 +254,18 @@ export default function PdfStudioPage() {
                 type="text"
                 value={docSubtitle}
                 onChange={(e) => setDocSubtitle(e.target.value)}
-                className="w-full p-2.5 rounded-xl glass-input text-xs text-white"
+                className="w-full p-2.5 rounded-xl glass-input text-base sm:text-xs text-white"
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="text-[11px] font-bold text-slate-300 mb-1 block">Author / Organization</label>
                 <input
                   type="text"
                   value={docAuthor}
                   onChange={(e) => setDocAuthor(e.target.value)}
-                  className="w-full p-2.5 rounded-xl glass-input text-xs text-white"
+                  className="w-full p-2.5 rounded-xl glass-input text-base sm:text-xs text-white"
                 />
               </div>
 
@@ -275,7 +275,7 @@ export default function PdfStudioPage() {
                   type="text"
                   value={signerName}
                   onChange={(e) => setSignerName(e.target.value)}
-                  className="w-full p-2.5 rounded-xl glass-input text-xs text-white"
+                  className="w-full p-2.5 rounded-xl glass-input text-base sm:text-xs text-white"
                 />
               </div>
             </div>
@@ -286,7 +286,7 @@ export default function PdfStudioPage() {
                 rows={8}
                 value={docContent}
                 onChange={(e) => setDocContent(e.target.value)}
-                className="w-full p-3 rounded-xl glass-input text-xs text-white leading-relaxed resize-none font-mono"
+                className="w-full p-3 rounded-xl glass-input text-base sm:text-xs text-white leading-relaxed resize-none font-mono"
               />
             </div>
 
@@ -305,7 +305,7 @@ export default function PdfStudioPage() {
 
             <button
               onClick={handleExportPdf}
-              className="w-full py-3 rounded-2xl btn-neon-primary text-xs flex items-center justify-center gap-2 mt-4 shadow-glow-cyan"
+              className="w-full py-3 rounded-2xl btn-neon-primary text-xs flex items-center justify-center gap-2 mt-4 shadow-glow-cyan touch-press font-semibold"
             >
               <Download className="w-4 h-4" />
               <span>Generate & Download Vector PDF</span>
@@ -381,13 +381,13 @@ export default function PdfStudioPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
               <label className="text-xs font-bold text-slate-300 mb-1.5 block">Document Stamp</label>
               <select
                 value={annotationStamp}
                 onChange={(e) => setAnnotationStamp(e.target.value)}
-                className="w-full p-2.5 rounded-xl glass-input text-xs text-white"
+                className="w-full p-2.5 rounded-xl glass-input text-base sm:text-xs text-white"
               >
                 <option value="CONFIDENTIAL" className="bg-dark-900">CONFIDENTIAL</option>
                 <option value="APPROVED" className="bg-dark-900">APPROVED</option>
@@ -419,13 +419,13 @@ export default function PdfStudioPage() {
               rows={3}
               value={annotationNotes}
               onChange={(e) => setAnnotationNotes(e.target.value)}
-              className="w-full p-3 rounded-xl glass-input text-xs text-white resize-none"
+              className="w-full p-3 rounded-xl glass-input text-base sm:text-xs text-white resize-none"
             />
           </div>
 
           <button
             onClick={handleExportAnnotated}
-            className="w-full py-3 rounded-2xl btn-neon-purple text-xs flex items-center justify-center gap-2"
+            className="w-full py-3 rounded-2xl btn-neon-purple text-xs flex items-center justify-center gap-2 touch-press font-semibold"
           >
             <Download className="w-4 h-4" />
             <span>Apply Stamp & Export Modified PDF</span>
@@ -435,9 +435,9 @@ export default function PdfStudioPage() {
 
       {/* TAB 3: AI DOCUMENT AUDIT */}
       {activeTab === 'ai-analyze' && (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
           {/* Controls */}
-          <div className="lg:col-span-5 glass-panel p-6 rounded-3xl space-y-5">
+          <div className="lg:col-span-5 glass-panel p-4 sm:p-6 rounded-2xl sm:rounded-3xl space-y-4 sm:space-y-5">
             <h3 className="text-sm font-bold text-white flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-brand-cyan" />
               <span>AI Document Auditor</span>
@@ -467,7 +467,7 @@ export default function PdfStudioPage() {
                 value={aiPrompt}
                 onChange={(e) => setAiPrompt(e.target.value)}
                 placeholder="What would you like the AI to extract or audit?"
-                className="w-full p-3 rounded-xl glass-input text-xs text-white resize-none"
+                className="w-full p-3 rounded-xl glass-input text-base sm:text-xs text-white resize-none"
               />
             </div>
 

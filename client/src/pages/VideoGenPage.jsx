@@ -217,30 +217,30 @@ export default function VideoGenPage() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-65px)] p-4 lg:p-8 max-w-7xl mx-auto">
+    <div className="min-h-[calc(100dvh-65px)] p-3.5 sm:p-6 lg:p-8 max-w-7xl mx-auto">
       {/* Header */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-8 pb-6 border-b border-white/10">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6 sm:mb-8 pb-4 sm:pb-6 border-b border-white/10">
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-neonPink/10 border border-brand-neonPink/30 text-brand-neonPink text-xs font-mono mb-2">
             <Video className="w-3.5 h-3.5" />
             <span>AI VIDEO SYNTHESIS PIPELINE</span>
           </div>
-          <h1 className="text-2xl lg:text-3xl font-bold text-white">Neural Cinema Studio</h1>
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white">Neural Cinema Studio</h1>
           <p className="text-xs text-slate-400 mt-1">
             Transform text prompts and start-frame images into cinematic scenes up to 5 minutes long with multi-format downloads (MP4, WebM, MP3, GIF, PDF).
           </p>
         </div>
 
-        <div className="px-3.5 py-1.5 rounded-xl bg-dark-900 border border-white/10 text-xs font-mono text-slate-300 flex items-center gap-2">
+        <div className="px-3 py-1.5 rounded-xl bg-dark-900 border border-white/10 text-xs font-mono text-slate-300 flex items-center gap-2 shrink-0">
           <Zap className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
-          <span>Configurable Duration: 5s to 5 Minutes</span>
+          <span>5s to 5 Minutes</span>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
         {/* Controls Column */}
         <div className="lg:col-span-5 space-y-6">
-          <form onSubmit={handleGenerateVideo} className="glass-panel p-6 rounded-3xl space-y-5">
+          <form onSubmit={handleGenerateVideo} className="glass-panel p-4 sm:p-6 rounded-2xl sm:rounded-3xl space-y-4 sm:space-y-5">
             {/* Prompt */}
             <div>
               <label className="text-xs font-bold text-white mb-2 flex items-center justify-between">
@@ -253,7 +253,7 @@ export default function VideoGenPage() {
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
                 placeholder="Describe action, cinematic lighting, setting, and mood..."
-                className="w-full p-3 rounded-2xl glass-input text-xs text-white placeholder-slate-500 resize-none"
+                className="w-full p-3 rounded-2xl glass-input text-base sm:text-xs text-white placeholder-slate-500 resize-none"
               />
             </div>
 
@@ -291,7 +291,7 @@ export default function VideoGenPage() {
                   <button
                     type="button"
                     onClick={() => startFrameInputRef.current?.click()}
-                    className="w-full py-2 px-2.5 rounded-xl border border-dashed border-white/15 text-slate-400 hover:text-white text-[11px] flex items-center justify-center gap-1.5 transition-colors"
+                    className="w-full py-2 px-2.5 rounded-xl border border-dashed border-white/15 text-slate-400 hover:text-white text-[11px] flex items-center justify-center gap-1.5 transition-colors touch-press"
                   >
                     <Upload className="w-3 h-3 text-brand-cyan" />
                     <span>Upload Image</span>
@@ -328,7 +328,7 @@ export default function VideoGenPage() {
                   <button
                     type="button"
                     onClick={() => audioInputRef.current?.click()}
-                    className="w-full py-2 px-2.5 rounded-xl border border-dashed border-white/15 text-slate-400 hover:text-white text-[11px] flex items-center justify-center gap-1.5 transition-colors"
+                    className="w-full py-2 px-2.5 rounded-xl border border-dashed border-white/15 text-slate-400 hover:text-white text-[11px] flex items-center justify-center gap-1.5 transition-colors touch-press"
                   >
                     <Upload className="w-3 h-3 text-amber-400" />
                     <span>Upload Audio</span>
@@ -350,13 +350,13 @@ export default function VideoGenPage() {
               </div>
 
               {/* Quick Presets */}
-              <div className="grid grid-cols-6 gap-1.5 mb-3">
+              <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5 mb-3">
                 {PRESET_DURATIONS.map((p) => (
                   <button
                     key={p.sec}
                     type="button"
                     onClick={() => setDuration(p.sec)}
-                    className={`py-1.5 rounded-xl text-[11px] font-mono font-bold border transition-all ${
+                    className={`py-1.5 rounded-xl text-[11px] font-mono font-bold border transition-all touch-press ${
                       duration === p.sec
                         ? 'bg-brand-cyan/20 border-brand-cyan text-white shadow-glow-cyan/20'
                         : 'bg-dark-900/60 border-white/5 text-slate-400 hover:bg-white/5 hover:text-slate-200'
