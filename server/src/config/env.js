@@ -5,7 +5,7 @@ export const config = {
     env: process.env.NODE_ENV || 'development',
     port: parseInt(process.env.PORT || '5000', 10),
     clientUrl: process.env.CLIENT_URL || 'http://localhost:5173',
-    mongoUri: process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/zsyiogpt',
+    sqliteDbPath: process.env.SQLITE_DB_PATH || './data/database.sqlite',
     jwt: {
         secret: process.env.JWT_SECRET || 'zsyiogpt_super_secret_jwt_key_2026_secure',
         expiresIn: process.env.JWT_EXPIRES_IN || '7d',

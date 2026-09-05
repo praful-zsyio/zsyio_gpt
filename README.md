@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # ZsyioGPT - Unified AI & Media Workspace
 
 > **MERN + TypeScript + Multi-Provider AI Gateway (OpenAI, Anthropic Claude, Google Gemini, xAI Grok)**
@@ -100,3 +101,6 @@ zsyiogpt/
 │   │   └── services/ai/        # AI Gateway & Provider Adapters
 └── package.json                # Workspace orchestration scripts
 ```
+=======
+# ZsyioGPT
+>>>>>>> db54b3b0b7e0e3bedf71c6d60907b93ff32c5f56

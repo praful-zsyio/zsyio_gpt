@@ -9,7 +9,7 @@
     "dev:client": "npm run dev --prefix client",
     "frontend": "npm run dev --prefix client",
     "backend": "npm run dev --prefix server",
-    "build": "npm run build --prefix server && npm run build --prefix client",
+    "build": "npm install --prefix server && npm install --prefix client && npm run build --prefix client",
     "start": "npm run start --prefix server",
     "install:all": "npm install && npm install --prefix server && npm install --prefix client"
   },

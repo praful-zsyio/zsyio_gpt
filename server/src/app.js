@@ -23,6 +23,22 @@ if (!fs.existsSync(uploadDir))
 app.use('/uploads', express.static(uploadDir));
 // API Routes
 app.use('/api/v1', apiRouter);
+
+// Serve frontend static build in production
+const clientDistPath = path.resolve(process.cwd(), '../client/dist');
+const localDistPath = path.resolve(process.cwd(), 'client/dist');
+const distPath = fs.existsSync(clientDistPath) ? clientDistPath : (fs.existsSync(localDistPath) ? localDistPath : null);
+
+if (distPath) {
+    app.use(express.static(distPath));
+    app.get('*', (req, res, next) => {
+        if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
+            return next();
+        }
+        res.sendFile(path.join(distPath, 'index.html'));
+    });
+}
+
 // Global Error Handler
 app.use(errorHandler);
 // Bootstrap
