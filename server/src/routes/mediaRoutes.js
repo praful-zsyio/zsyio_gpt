@@ -1,0 +1,10 @@
+import { Router } from 'express';
+import { generateImage, generateTTS, generateVideo, getMediaHistory, } from '../controllers/mediaController.js';
+import { authenticate } from '../middleware/auth.js';
+const router = Router();
+router.use(authenticate);
+router.post('/image', generateImage);
+router.post('/audio/tts', generateTTS);
+router.post('/video', generateVideo);
+router.get('/history', getMediaHistory);
+export default router;

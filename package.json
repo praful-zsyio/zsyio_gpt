@@ -1,0 +1,22 @@
+{
+  "name": "zsyiogpt",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ZsyioGPT - Unified AI & Media Workspace",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:server": "npm run dev --prefix server",
+    "dev:client": "npm run dev --prefix client",
+    "frontend": "npm run dev --prefix client",
+    "backend": "npm run dev --prefix server",
+    "build": "npm run build --prefix server && npm run build --prefix client",
+    "start": "npm run start --prefix server",
+    "install:all": "npm install && npm install --prefix server && npm install --prefix client"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  },
+  "keywords": ["ai", "chatgpt", "claude", "gemini", "grok", "ai-gateway", "mern"],
+  "author": "Zsyio",
+  "license": "MIT"
+}
