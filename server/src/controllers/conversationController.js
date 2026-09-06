@@ -1,6 +1,7 @@
 import { Conversation } from '../models/Conversation.js';
 import { Message } from '../models/Message.js';
 import { memoryStore } from '../services/store/memoryStore.js';
+import { aiService } from '../services/ai/AIService.js';
 export const getConversations = async (req, res, next) => {
     try {
         const userId = req.userId || 'demo-user-1';
@@ -54,12 +55,13 @@ export const createConversation = async (req, res, next) => {
     try {
         const userId = req.userId || 'demo-user-1';
         const { title, provider, model, systemPrompt } = req.body;
+        const resolved = aiService.resolveProviderAndModel(provider, model);
         if (memoryStore.isMongoAvailable) {
             const conversation = await Conversation.create({
                 userId,
                 title: title || 'New Conversation',
-                provider: provider || 'openai',
-                model: model || 'gpt-4o',
+                provider: resolved.provider,
+                model: resolved.model,
                 systemPrompt: systemPrompt || undefined,
             });
             res.status(201).json({ success: true, data: conversation });
@@ -71,8 +73,8 @@ export const createConversation = async (req, res, next) => {
             _id: id,
             userId,
             title: title || 'New Conversation',
-            provider: provider || 'openai',
-            model: model || 'gpt-4o',
+            provider: resolved.provider,
+            model: resolved.model,
             systemPrompt,
             isPinned: false,
             archived: false,

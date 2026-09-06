@@ -13,8 +13,9 @@ export const streamMessage = async (req, res, next) => {
             return;
         }
         let activeConvId = conversationId;
-        let currentProvider = provider || 'openai';
-        let currentModel = model || 'gpt-4o';
+        const resolved = aiService.resolveProviderAndModel(provider, model);
+        let currentProvider = resolved.provider;
+        let currentModel = resolved.model;
         let userMsgId = 'msg-' + Date.now();
         let aiMessages = [];
         if (memoryStore.isMongoAvailable) {
@@ -31,8 +32,12 @@ export const streamMessage = async (req, res, next) => {
                 });
             }
             activeConvId = conversation._id.toString();
-            currentProvider = provider || conversation.provider || 'openai';
-            currentModel = model || conversation.model || 'gpt-4o';
+            if (!provider && conversation.provider) {
+                currentProvider = conversation.provider;
+            }
+            if (!model && conversation.model) {
+                currentModel = conversation.model;
+            }
             const userMessage = await Message.create({
                 conversationId: conversation._id,
                 userId,
@@ -72,8 +77,12 @@ export const streamMessage = async (req, res, next) => {
                 };
                 memoryStore.conversations.set(activeConvId, conv);
             }
-            currentProvider = provider || conv.provider || 'openai';
-            currentModel = model || conv.model || 'gpt-4o';
+            if (!provider && conv.provider) {
+                currentProvider = conv.provider;
+            }
+            if (!model && conv.model) {
+                currentModel = conv.model;
+            }
             const memUserMsg = {
                 _id: userMsgId,
                 conversationId: activeConvId,
@@ -97,10 +106,13 @@ export const streamMessage = async (req, res, next) => {
         }
         // Setup SSE Headers
         res.setHeader('Content-Type', 'text/event-stream');
-        res.setHeader('Cache-Control', 'no-cache');
+        res.setHeader('Cache-Control', 'no-cache, no-transform');
         res.setHeader('Connection', 'keep-alive');
+        res.setHeader('X-Accel-Buffering', 'no');
         res.flushHeaders?.();
+        res.write(': sse-connected\n\n');
         res.write(`event: init\ndata: ${JSON.stringify({ conversationId: activeConvId, userMessageId: userMsgId })}\n\n`);
+
         let fullAiResponse = '';
         let inputTokens = Math.ceil(content.length / 4);
         let outputTokens = 0;

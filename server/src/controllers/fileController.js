@@ -38,13 +38,22 @@ export const uploadFile = async (req, res, next) => {
                 processingStatus: 'processed',
                 extractedText,
             });
-            res.status(201).json({ success: true, data: fileDoc });
+            const fileObj = fileDoc.toObject ? fileDoc.toObject() : fileDoc;
+            res.status(201).json({
+                success: true,
+                data: {
+                    ...fileObj,
+                    id: fileDoc._id,
+                    file: fileObj,
+                }
+            });
             return;
         }
         // In-memory fallback
         const id = 'file-' + Date.now();
         const memFile = {
             _id: id,
+            id,
             userId,
             projectId: projectId || null,
             name: uploadedFile.filename,
@@ -59,7 +68,14 @@ export const uploadFile = async (req, res, next) => {
             updatedAt: new Date(),
         };
         memoryStore.files.set(id, memFile);
-        res.status(201).json({ success: true, data: memFile });
+        res.status(201).json({
+            success: true,
+            data: {
+                ...memFile,
+                file: memFile,
+            }
+        });
+
     }
     catch (error) {
         next(error);
@@ -189,7 +205,7 @@ ${customPrompt ? `Additional Focus: ${customPrompt}` : ''}
         const { aiService } = await import('../services/ai/AIService.js');
         let analysisData = null;
         try {
-            const aiResponse = await aiService.sendMessage('openai', model, [
+            const aiResponse = await aiService.sendMessage(null, model || 'gpt-4o-mini', [
                 { role: 'system', content: systemPrompt },
                 { role: 'user', content: userPrompt }
             ], { temperature: 0.3 });
@@ -283,6 +299,23 @@ ${customPrompt ? `Additional Focus: ${customPrompt}` : ''}
                 ]
             };
         }
+
+        const formattedMarkdown = `### ${analysisData.title || resolvedName}
+
+**Executive Summary:**
+${analysisData.summary || ''}
+
+**Key Findings & Strategic Takeaways:**
+${(analysisData.executiveTakeaways || []).map(t => `- ${t}`).join('\n')}
+
+**Document Citations & References:**
+${(analysisData.referenceSection?.citations || []).map(c => `- **${c.citationKey || c.pageOrTimestamp}** (${c.title}): "${c.excerpt}"\n  *Impact*: ${c.relevance}`).join('\n')}
+
+**Standardized Academic Citations:**
+- **APA 7th**: ${analysisData.referenceSection?.bibliography?.apa || 'N/A'}
+- **IEEE**: ${analysisData.referenceSection?.bibliography?.ieee || 'N/A'}
+`;
+
         res.json({
             success: true,
             data: {
@@ -291,9 +324,11 @@ ${customPrompt ? `Additional Focus: ${customPrompt}` : ''}
                 fileType: resolvedType,
                 fileUrl: targetFile?.url || null,
                 generatedAt: new Date().toISOString(),
+                analysis: formattedMarkdown,
                 ...analysisData
             }
         });
+
     }
     catch (error) {
         next(error);

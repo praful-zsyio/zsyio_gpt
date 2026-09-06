@@ -55,8 +55,10 @@ export const api = {
         body: JSON.stringify(firebaseUserData),
       }),
     getMe: () => request('/auth/me'),
+    getGuestSession: () => request('/auth/guest', { method: 'POST' }),
     logout: () => request('/auth/logout', { method: 'POST' }),
   },
+
 
   // Models
   models: {
@@ -174,9 +176,10 @@ export const api = {
     analyzeReference: (fileId, prompt) =>
       request('/files/reference-analysis', {
         method: 'POST',
-        body: JSON.stringify({ fileId, prompt }),
+        body: JSON.stringify({ fileId, prompt, customPrompt: prompt }),
       }),
   },
+
 
   // Prompts (CO-STAR templates)
   prompts: {

@@ -32,7 +32,7 @@ export class OpenAIAdapter {
                 return 'anthropic/claude-3-haiku';
             }
             if (model.includes('gemini')) {
-                return 'google/gemini-2.5-flash';
+                return 'google/gemini-2.0-flash-001';
             }
             if (!model.includes('/')) {
                 if (model.startsWith('gpt-') || model.startsWith('o1') || model.startsWith('o3')) {
@@ -45,6 +45,7 @@ export class OpenAIAdapter {
         }
         return model;
     }
+
     async sendMessage(messages, model = 'gpt-4o', options) {
         const client = this.ensureClient();
         const startTime = Date.now();

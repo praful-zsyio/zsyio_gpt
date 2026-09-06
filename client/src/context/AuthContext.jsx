@@ -24,24 +24,35 @@ export const AuthProvider = ({ children }) => {
             setUser(res.data);
           }
         } catch (e) {
-          console.warn('[Auth] Session restore failed, clearing token');
+          console.warn('[Auth] Session restore failed, acquiring guest session');
           removeToken();
         }
-      } else {
-        // Provide mock user if completely offline so the user can freely explore features immediately
-        const fallbackUser = {
-          id: 'guest_' + Date.now(),
-          name: 'Explorer User',
-          email: 'guest@zsyiogpt.ai',
-          role: 'user',
-          plan: 'free',
-          credits: 1000,
-          preferences: { theme: 'dark', defaultModel: 'gpt-4o' }
-        };
-        setUser(fallbackUser);
+      }
+
+      // If still no user, fetch or establish guest session
+      if (!getToken()) {
+        try {
+          const res = await api.auth.getGuestSession();
+          if (res.success && res.data) {
+            handleAuthSuccess(res.data.token, res.data.user);
+          }
+        } catch {
+          // Provide mock user if completely offline so the user can freely explore features immediately
+          const fallbackUser = {
+            id: 'guest_' + Date.now(),
+            name: 'Explorer User',
+            email: 'guest@zsyiogpt.ai',
+            role: 'user',
+            plan: 'free',
+            credits: 1000,
+            preferences: { theme: 'dark', defaultModel: 'gpt-4o' }
+          };
+          setUser(fallbackUser);
+        }
       }
       setLoading(false);
     };
+
 
     initAuth();
   }, []);

@@ -327,6 +327,7 @@ export const firebaseAuth = async (req, res, next) => {
         res.cookie('token', token, {
             httpOnly: true,
             secure: config.env === 'production',
+            sameSite: config.env === 'production' ? 'none' : 'lax',
             maxAge: 7 * 24 * 60 * 60 * 1000,
         });
 
@@ -352,4 +353,52 @@ export const firebaseAuth = async (req, res, next) => {
         next(error);
     }
 };
+
+export const getGuestSession = async (req, res, next) => {
+    try {
+        const guestId = 'guest_' + Date.now();
+        const guestUser = {
+            id: guestId,
+            name: 'Explorer User',
+            email: `guest_${Date.now()}@zsyiogpt.ai`,
+            role: 'user',
+            plan: 'free',
+            credits: 1000,
+            preferences: {
+                theme: 'dark',
+                defaultModel: 'gpt-4o',
+                streamResponse: true,
+            },
+        };
+
+        memoryStore.users.set(guestId, {
+            _id: guestId,
+            ...guestUser,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        });
+
+        const { token, refreshToken } = generateTokens(guestId);
+
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: config.env === 'production',
+            sameSite: config.env === 'production' ? 'none' : 'lax',
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
+
+        res.json({
+            success: true,
+            message: 'Guest session created',
+            data: {
+                token,
+                refreshToken,
+                user: guestUser,
+            },
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 

@@ -15,10 +15,14 @@ export class GeminiAdapter {
     }
     normalizeModel(model) {
         if (model && model.includes('pro')) {
-            return 'gemini-3.1-pro-preview';
+            return 'gemini-1.5-pro';
         }
-        return 'gemini-3.6-flash';
+        if (model && (model.includes('2') || model.includes('flash'))) {
+            return 'gemini-2.0-flash';
+        }
+        return 'gemini-1.5-flash';
     }
+
     async sendMessage(messages, model = 'gemini-2.0-flash', options) {
         const genAI = this.ensureClient();
         const startTime = Date.now();
