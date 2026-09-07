@@ -4,6 +4,8 @@ import {
   signInWithGoogle as fbSignInWithGoogle,
   loginWithEmail as fbLoginWithEmail,
   registerWithEmail as fbRegisterWithEmail,
+  sendMagicLink as fbSendMagicLink,
+  checkAndCompleteEmailLinkSignIn,
   logoutFromFirebase,
 } from '../services/firebase.js';
 
@@ -13,9 +15,27 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Initialize auth session
+  // Initialize auth session & detect email sign-in link
   useEffect(() => {
     const initAuth = async () => {
+      // 1. Check if user landed from an Email Sign-In Link (Passwordless)
+      if (typeof window !== 'undefined' && (window.location.search.includes('apiKey') || window.location.href.includes('emailLink=true'))) {
+        try {
+          const emailLinkRes = await checkAndCompleteEmailLinkSignIn();
+          if (emailLinkRes?.success) {
+            const syncRes = await api.auth.syncFirebase(emailLinkRes.user);
+            if (syncRes.success) {
+              handleAuthSuccess(syncRes.data.token, syncRes.data.user);
+              setLoading(false);
+              return;
+            }
+          }
+        } catch (e) {
+          console.warn('[Email Link Sign-In]', e.message);
+        }
+      }
+
+      // 2. Restore existing token
       const existingToken = getToken();
       if (existingToken) {
         try {
@@ -29,7 +49,7 @@ export const AuthProvider = ({ children }) => {
         }
       }
 
-      // If no valid session token exists, user remains unauthenticated until real Google sign-in
+      // If no valid session token exists, user remains unauthenticated until real Google/Email sign-in
       if (!getToken()) {
         setUser(null);
       }
@@ -102,6 +122,23 @@ export const AuthProvider = ({ children }) => {
     return fbRes;
   };
 
+  // Passwordless Email Link (Magic Link)
+  const sendEmailSignInLink = async (email) => {
+    return await fbSendMagicLink(email);
+  };
+
+  const loginWithEmailLink = async (email) => {
+    const fbRes = await checkAndCompleteEmailLinkSignIn(email);
+    if (fbRes?.success) {
+      const syncRes = await api.auth.syncFirebase(fbRes.user);
+      if (syncRes.success) {
+        handleAuthSuccess(syncRes.data.token, syncRes.data.user);
+        return syncRes;
+      }
+    }
+    return fbRes;
+  };
+
   const logout = async () => {
     try {
       await api.auth.logout();
@@ -128,6 +165,8 @@ export const AuthProvider = ({ children }) => {
         loginWithGoogle,
         loginWithFirebaseEmail,
         registerWithFirebaseEmail,
+        sendEmailSignInLink,
+        loginWithEmailLink,
         logout,
         updateCredits,
       }}

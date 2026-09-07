@@ -8,7 +8,39 @@ import {
   createUserWithEmailAndPassword,
   signOut,
   updateProfile,
+  isSignInWithEmailLink,
+  signInWithEmailLink,
+  sendSignInLinkToEmail,
+  EmailAuthProvider,
+  linkWithCredential,
+  reauthenticateWithCredential,
+  PhoneAuthProvider,
+  PhoneMultiFactorGenerator,
+  TotpMultiFactorGenerator,
+  getMultiFactorResolver,
+  RecaptchaVerifier,
 } from 'firebase/auth';
+
+export {
+  getAuth,
+  signInWithPopup,
+  GoogleAuthProvider,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signOut,
+  updateProfile,
+  isSignInWithEmailLink,
+  signInWithEmailLink,
+  sendSignInLinkToEmail,
+  EmailAuthProvider,
+  linkWithCredential,
+  reauthenticateWithCredential,
+  PhoneAuthProvider,
+  PhoneMultiFactorGenerator,
+  TotpMultiFactorGenerator,
+  getMultiFactorResolver,
+  RecaptchaVerifier,
+};
 
 // Your web app's Firebase configuration
 export const firebaseConfig = {
@@ -127,10 +159,40 @@ export const registerWithEmail = async (email, password, name) => {
 };
 
 /**
- * Login with Email and Password
+ * Send passwordless Email Sign-In Link (Magic Link)
  */
-export const loginWithEmail = async (email, password) => {
-  const result = await signInWithEmailAndPassword(auth, email, password);
+export const sendMagicLink = async (email) => {
+  const actionCodeSettings = {
+    url: (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:5173') + '/auth?emailLink=true',
+    handleCodeInApp: true,
+  };
+  await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+  if (typeof window !== 'undefined') {
+    window.localStorage.setItem('emailForSignIn', email);
+  }
+  return { success: true };
+};
+
+/**
+ * Check if the landing URL is an email sign-in link, and complete sign-in.
+ */
+export const checkAndCompleteEmailLinkSignIn = async (providedEmail = null) => {
+  if (typeof window === 'undefined') return null;
+  if (!isSignInWithEmailLink(auth, window.location.href)) {
+    return null;
+  }
+
+  let email = providedEmail || window.localStorage.getItem('emailForSignIn');
+  if (!email) {
+    email = window.prompt('Please provide your email for sign-in confirmation:');
+  }
+  if (!email) {
+    throw new Error('Email is required to complete email link sign-in.');
+  }
+
+  const result = await signInWithEmailLink(auth, email, window.location.href);
+  window.localStorage.removeItem('emailForSignIn');
+
   return {
     success: true,
     user: {
@@ -138,8 +200,115 @@ export const loginWithEmail = async (email, password) => {
       name: result.user.displayName || result.user.email?.split('@')[0] || 'User',
       email: result.user.email,
       avatar: result.user.photoURL || '',
-    }
+    },
+    isNewUser: result._tokenResponse?.isNewUser || false,
   };
+};
+
+/**
+ * Link email link credential to the currently signed-in user
+ */
+export const linkEmailLinkCredential = async (email) => {
+  if (!auth.currentUser) throw new Error('No user is currently signed in');
+  const credential = EmailAuthProvider.credentialWithLink(email, window.location.href);
+  const usercred = await linkWithCredential(auth.currentUser, credential);
+  return usercred;
+};
+
+/**
+ * Re-authenticate the current user with email link credential
+ */
+export const reauthenticateWithEmailLink = async (email) => {
+  if (!auth.currentUser) throw new Error('No user is currently signed in');
+  const credential = EmailAuthProvider.credentialWithLink(email, window.location.href);
+  const usercred = await reauthenticateWithCredential(auth.currentUser, credential);
+  return usercred;
+};
+
+/**
+ * Login with Email and Password with optional Multi-Factor Authentication (MFA) resolution
+ */
+export const loginWithEmail = async (
+  email,
+  password,
+  options = {}
+) => {
+  try {
+    const result = await signInWithEmailAndPassword(auth, email, password);
+    return {
+      success: true,
+      user: {
+        uid: result.user.uid,
+        name: result.user.displayName || result.user.email?.split('@')[0] || 'User',
+        email: result.user.email,
+        avatar: result.user.photoURL || '',
+      }
+    };
+  } catch (error) {
+    // Check if user is enrolled in MFA
+    if (error.code === 'auth/multi-factor-auth-required') {
+      const resolver = error.resolver || getMultiFactorResolver(auth, error);
+
+      if (options.onMfaRequired) {
+        return await options.onMfaRequired(resolver);
+      }
+
+      const selectedIndex = options.selectedIndex || 0;
+      const hint = resolver.hints[selectedIndex] || resolver.hints[0];
+
+      if (hint && hint.factorId === PhoneMultiFactorGenerator.FACTOR_ID) {
+        const phoneInfoOptions = {
+          multiFactorHint: hint,
+          session: resolver.session,
+        };
+        const phoneAuthProvider = new PhoneAuthProvider(auth);
+        const verificationId = await phoneAuthProvider.verifyPhoneNumber(
+          phoneInfoOptions,
+          options.recaptchaVerifier
+        );
+        const verificationCode = typeof options.getVerificationCode === 'function'
+          ? await options.getVerificationCode(verificationId)
+          : window.prompt('Please enter the SMS verification code:');
+
+        const cred = PhoneAuthProvider.credential(verificationId, verificationCode);
+        const multiFactorAssertion = PhoneMultiFactorGenerator.assertion(cred);
+        const userCredential = await resolver.resolveSignIn(multiFactorAssertion);
+
+        return {
+          success: true,
+          user: {
+            uid: userCredential.user.uid,
+            name: userCredential.user.displayName || userCredential.user.email?.split('@')[0] || 'User',
+            email: userCredential.user.email,
+            avatar: userCredential.user.photoURL || '',
+          }
+        };
+      } else if (hint && hint.factorId === TotpMultiFactorGenerator.FACTOR_ID) {
+        const verificationCode = typeof options.getVerificationCode === 'function'
+          ? await options.getVerificationCode(null)
+          : window.prompt('Please enter the Authenticator App (TOTP) code:');
+
+        const multiFactorAssertion = TotpMultiFactorGenerator.assertionForSignIn(
+          hint.uid,
+          verificationCode
+        );
+        const userCredential = await resolver.resolveSignIn(multiFactorAssertion);
+
+        return {
+          success: true,
+          user: {
+            uid: userCredential.user.uid,
+            name: userCredential.user.displayName || userCredential.user.email?.split('@')[0] || 'User',
+            email: userCredential.user.email,
+            avatar: userCredential.user.photoURL || '',
+          }
+        };
+      } else {
+        throw new Error(`Unsupported second factor: ${hint?.factorId}`);
+      }
+    }
+    throw error;
+  }
 };
 
 /**
@@ -148,4 +317,5 @@ export const loginWithEmail = async (email, password) => {
 export const logoutFromFirebase = async () => {
   await signOut(auth);
 };
+
 
