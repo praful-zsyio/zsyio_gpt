@@ -42,6 +42,13 @@ class AIService {
         else {
             this.adapters.set('xai', new MockAdapter('xai'));
         }
+        // Experiential Labs / Nano Banana Gateway
+        if (config.ai.nanoBananaApiKey) {
+            const expAdapter = new OpenAIAdapter(config.ai.nanoBananaApiKey, config.ai.experientialBaseUrl);
+            this.adapters.set('experiential', expAdapter);
+            this.adapters.set('nanobanana', expAdapter);
+            this.adapters.set('nano-banana', expAdapter);
+        }
     }
     getAdapter(providerName) {
         const adapter = this.adapters.get(providerName.toLowerCase());
@@ -63,6 +70,8 @@ class AIService {
                 resolvedProvider = 'gemini';
             } else if (m.includes('grok')) {
                 resolvedProvider = 'xai';
+            } else if (m.includes('banana') || m.includes('experiential')) {
+                resolvedProvider = 'experiential';
             } else {
                 resolvedProvider = 'openai';
             }

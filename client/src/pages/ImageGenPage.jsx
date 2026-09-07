@@ -22,6 +22,14 @@ import {
 } from 'lucide-react';
 import { downloadImageAs } from '../utils/downloader.js';
 
+const ENGINES = [
+  { id: 'gemini-2.5-flash-image', label: 'Nano Banana', tag: 'Gemini 2.5 Flash Diffusion', icon: '🍌', badge: 'Fast & Creative' },
+  { id: 'gemini-3.1-flash-image', label: 'Nano Banana 2', tag: 'Next-Gen Ultra Sharpness', icon: '⚡', badge: 'High-Res' },
+  { id: 'gemini-3-pro-image', label: 'Nano Banana Pro', tag: 'Deep Visual Reasoning', icon: '✨', badge: 'Pro Studio' },
+  { id: 'dall-e-3', label: 'DALL-E 3', tag: 'OpenAI Studio Render', icon: '🎨' },
+  { id: 'sdxl-1.0', label: 'SDXL 1.0', tag: 'Stability AI High Detail', icon: '🌟' },
+];
+
 const STYLES = [
   { id: 'photorealistic', label: 'Hyper-Realistic', tag: '8k, ultra-detailed, octane render', icon: '📸' },
   { id: 'cyberpunk', label: 'Cyberpunk Neon', tag: 'volumetric light, neon glow, futuristic', icon: '🏙️' },
@@ -47,6 +55,7 @@ const SAMPLE_PROMPTS = [
 export default function ImageGenPage() {
   const { user, updateCredits } = useAuth();
   const [prompt, setPrompt] = useState('');
+  const [selectedEngine, setSelectedEngine] = useState('gemini-2.5-flash-image');
   const [negativePrompt, setNegativePrompt] = useState('blurry, low quality, distorted, extra limbs');
   const [selectedStyle, setSelectedStyle] = useState('photorealistic');
   const [aspectRatio, setAspectRatio] = useState('1:1');
@@ -145,6 +154,7 @@ export default function ImageGenPage() {
         prompt: fullPrompt,
         style: selectedStyle,
         aspectRatio,
+        model: selectedEngine,
         negativePrompt,
         referenceImageUrl: uploadedRefUrl,
         referenceStrength: refImageFile ? refStrength : undefined,
@@ -152,10 +162,12 @@ export default function ImageGenPage() {
 
       if (res.success && res.data) {
         const newImg = {
-          id: res.data.id || 'img_' + Date.now(),
+          id: res.data.id || res.data._id || 'img_' + Date.now(),
           url: res.data.url || res.data.imageUrl || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop&q=80',
           prompt,
           style: selectedStyle,
+          model: res.data.model || selectedEngine,
+          provider: res.data.provider || 'nano-banana',
           aspectRatio,
           createdAt: new Date(),
         };
@@ -301,6 +313,67 @@ export default function ImageGenPage() {
               />
             </div>
 
+            {/* AI Engine Selector (Nano Banana / Gemini / DALL-E) */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-xs font-bold text-slate-300">AI Diffusion Engine</label>
+                <span className="text-[10px] text-amber-400 font-mono flex items-center gap-1 bg-amber-400/10 px-2 py-0.5 rounded-full border border-amber-400/20">
+                  <span>🍌 Nano Banana Powered</span>
+                </span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-2">
+                {ENGINES.slice(0, 3).map((eng) => {
+                  const active = selectedEngine === eng.id;
+                  return (
+                    <button
+                      key={eng.id}
+                      type="button"
+                      onClick={() => setSelectedEngine(eng.id)}
+                      className={`p-2.5 rounded-xl text-left transition-all border touch-press ${
+                        active
+                          ? 'bg-amber-500/15 border-amber-400 text-white shadow-glow-amber/20'
+                          : 'bg-dark-900/60 border-white/5 text-slate-400 hover:bg-white/5 hover:text-slate-200'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-base">{eng.icon}</span>
+                        {eng.badge && (
+                          <span className="text-[9px] px-1.5 py-0.5 rounded bg-amber-400/20 text-amber-300 font-mono">
+                            {eng.badge}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs font-bold text-white truncate">{eng.label}</p>
+                      <p className="text-[10px] text-slate-400 truncate">{eng.tag}</p>
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {ENGINES.slice(3).map((eng) => {
+                  const active = selectedEngine === eng.id;
+                  return (
+                    <button
+                      key={eng.id}
+                      type="button"
+                      onClick={() => setSelectedEngine(eng.id)}
+                      className={`p-2 rounded-xl text-left transition-all border touch-press flex items-center gap-2 ${
+                        active
+                          ? 'bg-brand-purple/20 border-brand-purple text-white shadow-glow-purple/20'
+                          : 'bg-dark-900/60 border-white/5 text-slate-400 hover:bg-white/5'
+                      }`}
+                    >
+                      <span className="text-base">{eng.icon}</span>
+                      <div className="min-w-0">
+                        <p className="text-xs font-semibold text-white truncate">{eng.label}</p>
+                        <p className="text-[10px] text-slate-400 truncate">{eng.tag}</p>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             {/* Styles Selector */}
             <div>
               <label className="text-xs font-bold text-slate-300 mb-2 block">Artistic Style Preset</label>
@@ -403,7 +476,9 @@ export default function ImageGenPage() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-3">
                   <p className="text-[11px] text-white line-clamp-2">{item.prompt}</p>
                   <div className="flex items-center justify-between mt-2 pt-1 border-t border-white/20">
-                    <span className="text-[10px] font-mono text-brand-cyan uppercase">{item.style}</span>
+                    <span className="text-[10px] font-mono text-brand-cyan uppercase truncate max-w-[120px]">
+                      {item.model?.includes('gemini') || item.model?.includes('banana') ? '🍌 ' + (item.model.replace('gemini-', '').replace('-image', '')) : item.style}
+                    </span>
                     <Maximize2 className="w-3.5 h-3.5 text-white" />
                   </div>
                 </div>
@@ -439,13 +514,18 @@ export default function ImageGenPage() {
               <p className="text-xs text-slate-200 leading-relaxed mb-4">{selectedImage.prompt}</p>
 
               <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-white/10">
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                   <span className="text-[10px] px-2 py-1 rounded-md bg-white/5 text-slate-400 font-mono">
                     Ratio: {selectedImage.aspectRatio || '1:1'}
                   </span>
                   <span className="text-[10px] px-2 py-1 rounded-md bg-white/5 text-slate-400 font-mono">
                     Style: {selectedImage.style}
                   </span>
+                  {selectedImage.model && (
+                    <span className="text-[10px] px-2 py-1 rounded-md bg-amber-400/10 text-amber-300 font-mono border border-amber-400/20 flex items-center gap-1">
+                      <span>🍌 {selectedImage.model}</span>
+                    </span>
+                  )}
                 </div>
 
                 <div className="flex items-center gap-2">

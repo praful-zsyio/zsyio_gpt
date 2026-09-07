@@ -43,6 +43,9 @@ export const config = {
         xaiApiKey: (process.env.XAI_API_KEY || process.env.GROK_API_KEY || '').trim(),
         openaiBaseUrl: (process.env.OPENAI_BASE_URL || '').trim(),
         stabilityApiKey: (process.env.STABILITY_API_KEY || '').trim(),
+        nanoBananaApiKey: (process.env.NANO_BANANA_API_KEY || process.env.EXPERIENTIAL_API_KEY || '').trim(),
+        experientialApiKey: (process.env.EXPERIENTIAL_API_KEY || process.env.NANO_BANANA_API_KEY || '').trim(),
+        experientialBaseUrl: (process.env.EXPERIENTIAL_BASE_URL || 'https://api.experientiallabs.ai/v1').trim(),
     }
 };
 
