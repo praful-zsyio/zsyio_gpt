@@ -55,6 +55,13 @@ export const config = {
         messagingSenderId: (process.env.FIREBASE_MESSAGING_SENDER_ID || '866726181668').trim(),
         appId: (process.env.FIREBASE_APP_ID || '1:866726181668:web:e81cdfef8b21ac365f51b1').trim(),
         measurementId: (process.env.FIREBASE_MEASUREMENT_ID || 'G-VHJFB0D85Y').trim(),
+    },
+    payment: {
+        defaultGateway: process.env.PAYMENT_GATEWAY_DEFAULT || 'unified',
+        stripeSecretKey: (process.env.STRIPE_SECRET_KEY || '').trim(),
+        stripePublishableKey: (process.env.STRIPE_PUBLISHABLE_KEY || '').trim(),
+        razorpayKeyId: (process.env.RAZORPAY_KEY_ID || '').trim(),
+        razorpayKeySecret: (process.env.RAZORPAY_KEY_SECRET || '').trim(),
     }
 };
 

@@ -196,4 +196,20 @@ export const api = {
   usage: {
     getStats: () => request('/usage'),
   },
+
+  // Payment Gateway & Credits
+  payment: {
+    getPlans: () => request('/payment/plans'),
+    createOrder: (planId, gateway = 'unified') =>
+      request('/payment/create-order', {
+        method: 'POST',
+        body: JSON.stringify({ planId, gateway }),
+      }),
+    verifyPayment: (orderId, paymentId) =>
+      request('/payment/verify', {
+        method: 'POST',
+        body: JSON.stringify({ orderId, paymentId }),
+      }),
+    getHistory: () => request('/payment/history'),
+  },
 };

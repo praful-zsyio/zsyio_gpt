@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../services/api.js';
 import { useAuth } from '../context/AuthContext.jsx';
+import PaymentModal from '../components/payment/PaymentModal.jsx';
 import {
   BarChart3,
   Zap,
@@ -10,11 +11,16 @@ import {
   Layers,
   ArrowUpRight,
   Sparkles,
+  CreditCard,
+  Clock,
+  CheckCircle2,
 } from 'lucide-react';
 
 export default function UsagePage() {
-  const { user, updateCredits } = useAuth();
+  const { user } = useAuth();
   const [stats, setStats] = useState(null);
+  const [paymentModalOpen, setPaymentModalOpen] = useState(false);
+  const [history, setHistory] = useState([]);
 
   useEffect(() => {
     const loadStats = async () => {
@@ -39,14 +45,19 @@ export default function UsagePage() {
         });
       }
     };
-    loadStats();
-  }, []);
 
-  const handleTopUp = (amount) => {
-    const current = user?.credits || 0;
-    updateCredits(current + amount);
-    alert(`Successfully added ${amount} Credits to your workspace balance!`);
-  };
+    const loadHistory = async () => {
+      try {
+        const res = await api.payment.getHistory();
+        if (res.success && res.data) {
+          setHistory(res.data);
+        }
+      } catch {}
+    };
+
+    loadStats();
+    loadHistory();
+  }, [user?.credits]);
 
   return (
     <div className="min-h-[calc(100dvh-65px)] p-3.5 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6 sm:space-y-8">
@@ -59,16 +70,16 @@ export default function UsagePage() {
           </div>
           <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white">Token & Credit Analytics</h1>
           <p className="text-xs text-slate-400 mt-1">
-            Real-time breakdown of multi-model inference token metrics, credits, and gateway status.
+            Real-time breakdown of multi-model inference token metrics, credits, and payment gateway status.
           </p>
         </div>
 
         <button
-          onClick={() => handleTopUp(500)}
+          onClick={() => setPaymentModalOpen(true)}
           className="flex items-center gap-2 px-4 py-2 rounded-xl btn-neon-primary text-xs font-semibold shadow-glow-cyan touch-press shrink-0"
         >
-          <Plus className="w-4 h-4" />
-          <span>Top-Up +500 Credits</span>
+          <CreditCard className="w-4 h-4" />
+          <span>Top-Up Credits & Plans</span>
         </button>
       </div>
 
@@ -141,6 +152,66 @@ export default function UsagePage() {
           ))}
         </div>
       </div>
+
+      {/* Payment & Credit Orders History */}
+      <div className="glass-panel p-6 rounded-3xl border border-white/10 space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-bold text-white flex items-center gap-2">
+            <CreditCard className="w-4 h-4 text-amber-400" />
+            <span>Billing & Credit Purchase History</span>
+          </h3>
+          <button
+            onClick={() => setPaymentModalOpen(true)}
+            className="text-xs text-brand-cyan hover:underline font-medium"
+          >
+            Buy More Credits
+          </button>
+        </div>
+
+        {history.length > 0 ? (
+          <div className="space-y-2.5">
+            {history.map((tx) => (
+              <div
+                key={tx.orderId}
+                className="p-3.5 rounded-2xl bg-dark-900/60 border border-white/5 flex items-center justify-between"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0">
+                    <Zap className="w-4 h-4 fill-amber-400" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-white">{tx.planName || 'Credit Pack'}</p>
+                    <p className="text-[10px] text-slate-400 font-mono">
+                      {new Date(tx.createdAt).toLocaleDateString()} • {tx.gateway?.toUpperCase() || 'GATEWAY'}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="text-right">
+                  <p className="text-xs font-bold font-mono text-emerald-400">
+                    +{tx.credits?.toLocaleString()} CR
+                  </p>
+                  <p className="text-[10px] text-slate-400 font-mono">${tx.amount} USD</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="p-8 rounded-2xl bg-dark-900/40 border border-dashed border-white/10 text-center space-y-2">
+            <Clock className="w-6 h-6 text-slate-500 mx-auto" />
+            <p className="text-xs text-slate-300 font-medium">No external purchases yet</p>
+            <p className="text-[11px] text-slate-500 max-w-sm mx-auto">
+              Your account is currently running on the complimentary 1,000 Explorer Credits.
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Payment Gateway Modal */}
+      <PaymentModal
+        isOpen={paymentModalOpen}
+        onClose={() => setPaymentModalOpen(false)}
+      />
     </div>
   );
 }

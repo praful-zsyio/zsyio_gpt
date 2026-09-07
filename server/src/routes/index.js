@@ -7,6 +7,7 @@ import promptRoutes from './promptRoutes.js';
 import usageRoutes from './usageRoutes.js';
 import fileRoutes from './fileRoutes.js';
 import mediaRoutes from './mediaRoutes.js';
+import paymentRoutes from './paymentRoutes.js';
 const router = Router();
 router.get('/health', (_req, res) => {
     res.json({
@@ -23,4 +24,5 @@ router.use('/prompts', promptRoutes);
 router.use('/usage', usageRoutes);
 router.use('/files', fileRoutes);
 router.use('/media', mediaRoutes);
+router.use('/payment', paymentRoutes);
 export default router;

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
+import PaymentModal from '../payment/PaymentModal.jsx';
 import {
   Sparkles,
   MessageSquare,
@@ -16,12 +17,14 @@ import {
   User,
   ShieldCheck,
   ChevronRight,
+  Plus,
 } from 'lucide-react';
 
 export default function Navbar() {
   const { user, logout, isAuthenticated } = useAuth();
   const location = useLocation();
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+  const [paymentModalOpen, setPaymentModalOpen] = useState(false);
 
   const navItems = [
     { name: 'AI Chat', shortName: 'Chat', path: '/chat', icon: MessageSquare },
@@ -88,15 +91,25 @@ export default function Navbar() {
 
           {/* User & Actions Area */}
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-            {/* Credit balance */}
-            <Link
-              to="/usage"
-              className="flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-mono font-medium hover:bg-amber-500/20 transition-colors touch-press"
-            >
-              <Zap className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-              <span>{user?.credits ?? 1000}</span>
-              <span className="hidden xs:inline text-[10px] opacity-75">CR</span>
-            </Link>
+            {/* Credit balance & Top-Up */}
+            <div className="flex items-center gap-1">
+              <Link
+                to="/usage"
+                className="flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-mono font-medium hover:bg-amber-500/20 transition-colors touch-press"
+                title="View Analytics & Usage"
+              >
+                <Zap className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                <span>{user?.credits ?? 1000}</span>
+                <span className="hidden xs:inline text-[10px] opacity-75">CR</span>
+              </Link>
+              <button
+                onClick={() => setPaymentModalOpen(true)}
+                className="p-1.5 rounded-xl bg-gradient-to-r from-amber-500/20 to-brand-cyan/20 border border-amber-400/40 text-amber-300 hover:text-white hover:border-amber-400 text-xs font-bold transition-all shadow-glow-amber/20 touch-press"
+                title="Top-Up Credits"
+              >
+                <Plus className="w-3.5 h-3.5" />
+              </button>
+            </div>
 
             {/* Desktop User state */}
             {isAuthenticated && user?.email !== 'guest@zsyiogpt.ai' ? (
@@ -292,6 +305,12 @@ export default function Navbar() {
           })}
         </div>
       </nav>
+
+      {/* Payment Gateway Modal */}
+      <PaymentModal
+        isOpen={paymentModalOpen}
+        onClose={() => setPaymentModalOpen(false)}
+      />
     </>
   );
 }
