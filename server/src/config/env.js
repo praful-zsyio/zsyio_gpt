@@ -46,6 +46,15 @@ export const config = {
         nanoBananaApiKey: (process.env.NANO_BANANA_API_KEY || process.env.EXPERIENTIAL_API_KEY || '').trim(),
         experientialApiKey: (process.env.EXPERIENTIAL_API_KEY || process.env.NANO_BANANA_API_KEY || '').trim(),
         experientialBaseUrl: (process.env.EXPERIENTIAL_BASE_URL || 'https://api.experientiallabs.ai/v1').trim(),
+    },
+    firebase: {
+        apiKey: (process.env.FIREBASE_API_KEY || '').trim(),
+        authDomain: (process.env.FIREBASE_AUTH_DOMAIN || 'zsyiogpt.firebaseapp.com').trim(),
+        projectId: (process.env.FIREBASE_PROJECT_ID || 'zsyiogpt').trim(),
+        storageBucket: (process.env.FIREBASE_STORAGE_BUCKET || 'zsyiogpt.firebasestorage.app').trim(),
+        messagingSenderId: (process.env.FIREBASE_MESSAGING_SENDER_ID || '866726181668').trim(),
+        appId: (process.env.FIREBASE_APP_ID || '1:866726181668:web:e81cdfef8b21ac365f51b1').trim(),
+        measurementId: (process.env.FIREBASE_MEASUREMENT_ID || 'G-VHJFB0D85Y').trim(),
     }
 };
 

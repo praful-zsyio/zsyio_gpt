@@ -1,4 +1,5 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
+import { getAnalytics, isSupported } from 'firebase/analytics';
 import {
   getAuth,
   signInWithPopup,
@@ -9,22 +10,36 @@ import {
   updateProfile,
 } from 'firebase/auth';
 
-// Firebase configuration from environment or fallback default project config
-const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyDummyKeyForLocalDevAndDemo123456",
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "zsyiogpt-ai.firebaseapp.com",
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "zsyiogpt-ai",
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "zsyiogpt-ai.appspot.com",
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "123456789012",
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:123456789012:web:abcdef1234567890"
+// Your web app's Firebase configuration
+export const firebaseConfig = {
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyDVgCxpsz8PV18qTM6NI9kpvpZeOSySR9Q",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "zsyiogpt.firebaseapp.com",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "zsyiogpt",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "zsyiogpt.firebasestorage.app",
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "866726181668",
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:866726181668:web:e81cdfef8b21ac365f51b1",
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "G-VHJFB0D85Y"
 };
 
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+// Initialize Firebase
+export const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 export const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 
+// Initialize Analytics (supported in browser environments)
+export let analytics = null;
+if (typeof window !== 'undefined') {
+  isSupported().then((supported) => {
+    if (supported) {
+      analytics = getAnalytics(app);
+    }
+  }).catch((err) => {
+    console.debug('[Firebase Analytics] Not supported in this environment:', err.message);
+  });
+}
+
 export const isFirebaseConfigured = () => {
-  return !!import.meta.env.VITE_FIREBASE_API_KEY && !import.meta.env.VITE_FIREBASE_API_KEY.includes("Dummy");
+  return !!firebaseConfig.apiKey && !firebaseConfig.apiKey.includes("Dummy");
 };
 
 /**
