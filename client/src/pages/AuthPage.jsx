@@ -59,7 +59,11 @@ export default function AuthPage() {
       await sendEmailSignInLink(email);
       setSuccessMsg(`Sign-in link sent to ${email}! Open the link in your email to sign in instantly.`);
     } catch (err) {
-      setError(err.message || 'Failed to send sign-in link. Please check your email address.');
+      if (err.code === 'auth/operation-not-allowed') {
+        setError('Email Link sign-in is not enabled yet in your Firebase project (zsyiogpt). In Firebase Console -> Authentication -> Sign-in method -> Click "Email/Password" -> Turn ON "Email link (passwordless sign-in)".');
+      } else {
+        setError(err.message || 'Failed to send sign-in link. Please check your email address.');
+      }
     } finally {
       setLoading(false);
     }
@@ -75,8 +79,13 @@ export default function AuthPage() {
         setTimeout(() => navigate('/chat'), 800);
       }
     } catch (err) {
-      if (err.code === 'auth/configuration-not-found' || err.message?.includes('configuration-not-found')) {
-        setError('Google Sign-In is not enabled yet in your Firebase project (zsyiogpt). Please go to Firebase Console -> Authentication -> Sign-in method -> Enable "Google".');
+      if (
+        err.code === 'auth/operation-not-allowed' ||
+        err.code === 'auth/configuration-not-found' ||
+        err.message?.includes('operation-not-allowed') ||
+        err.message?.includes('configuration-not-found')
+      ) {
+        setError('Google Sign-In is not enabled yet in your Firebase project (zsyiogpt). Please go to Firebase Console -> Authentication -> Sign-in method -> Enable "Google" provider and click Save.');
       } else if (err.code === 'auth/popup-closed-by-user') {
         setError('Google Sign-In was cancelled (popup window was closed).');
       } else if (err.code === 'auth/popup-blocked') {
@@ -132,7 +141,11 @@ export default function AuthPage() {
         }
       }
     } catch (err) {
-      setError(err.message || 'Authentication failed. Please verify credentials.');
+      if (err.code === 'auth/operation-not-allowed' || err.message?.includes('operation-not-allowed')) {
+        setError('Email/Password sign-in is not enabled in your Firebase project (zsyiogpt). Go to Firebase Console -> Authentication -> Sign-in method -> Click "Email/Password" -> Toggle "Enable" -> Click Save.');
+      } else {
+        setError(err.message || 'Authentication failed. Please verify credentials.');
+      }
     } finally {
       setLoading(false);
     }
