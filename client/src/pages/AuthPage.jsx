@@ -22,12 +22,20 @@ export default function AuthPage() {
     setError('');
     try {
       const res = await loginWithGoogle();
-      if (res.success) {
+      if (res?.success) {
         setSuccessMsg('Signed in with Google successfully!');
         setTimeout(() => navigate('/chat'), 800);
       }
     } catch (err) {
-      setError(err.message || 'Failed to sign in with Google');
+      if (err.code === 'auth/configuration-not-found' || err.message?.includes('configuration-not-found')) {
+        setError('Google Sign-In is not enabled yet in your Firebase project (zsyiogpt). Please go to Firebase Console -> Authentication -> Sign-in method -> Enable "Google".');
+      } else if (err.code === 'auth/popup-closed-by-user') {
+        setError('Google Sign-In was cancelled (popup window was closed).');
+      } else if (err.code === 'auth/popup-blocked') {
+        setError('Google Sign-In popup was blocked by browser. Please allow popups for localhost.');
+      } else {
+        setError(err.message || 'Failed to sign in with Google');
+      }
     } finally {
       setLoading(false);
     }
