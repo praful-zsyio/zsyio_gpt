@@ -9,8 +9,8 @@
     "dev:client": "npm --prefix frontend run dev",
     "frontend": "npm --prefix frontend run dev",
     "backend": "npm --prefix server run dev",
-    "build": "npm --prefix frontend run build",
-    "start": "npm --prefix server run start"
+    "build": "npm --prefix frontend install --legacy-peer-deps && npm --prefix frontend run build",
+    "start": "npm --prefix server install --legacy-peer-deps && npm --prefix server run start"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"

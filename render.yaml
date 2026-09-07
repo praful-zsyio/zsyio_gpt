@@ -1,0 +1,83 @@
+services:
+  - type: web
+    name: zsyiogpt
+    runtime: node
+    region: oregon
+    plan: free
+    rootDir: .
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: CLIENT_URL
+        sync: false
+      # ── AI Keys (set in Render dashboard) ─────────────────────────────
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: GOOGLE_AI_API_KEY
+        sync: false
+      - key: XAI_API_KEY
+        sync: false
+      - key: STABILITY_API_KEY
+        sync: false
+      - key: NANO_BANANA_API_KEY
+        sync: false
+      - key: EXPERIENTIAL_API_KEY
+        sync: false
+      - key: EXPERIENTIAL_BASE_URL
+        value: https://api.experientiallabs.ai/v1
+      # ── Firebase ──────────────────────────────────────────────────────
+      - key: FIREBASE_API_KEY
+        sync: false
+      - key: FIREBASE_AUTH_DOMAIN
+        value: zsyiogpt.firebaseapp.com
+      - key: FIREBASE_PROJECT_ID
+        value: zsyiogpt
+      - key: FIREBASE_STORAGE_BUCKET
+        value: zsyiogpt.firebasestorage.app
+      - key: FIREBASE_MESSAGING_SENDER_ID
+        value: "866726181668"
+      - key: FIREBASE_APP_ID
+        sync: false
+      - key: FIREBASE_MEASUREMENT_ID
+        sync: false
+      # ── Payment ───────────────────────────────────────────────────────
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_PUBLISHABLE_KEY
+        sync: false
+      - key: RAZORPAY_KEY_ID
+        sync: false
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
+      # ── Auth / JWT ────────────────────────────────────────────────────
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_EXPIRES_IN
+        value: 30d
+      # ── Email / SMTP ──────────────────────────────────────────────────
+      - key: SMTP_HOST
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_SECURE
+        value: "false"
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: SMTP_FROM_NAME
+        value: ZsyioGPT
+      - key: SMTP_FROM_EMAIL
+        value: noreply@zsyiogpt.com
+      - key: OWNER_EMAIL
+        sync: false
