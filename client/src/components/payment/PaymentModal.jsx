@@ -107,9 +107,15 @@ export default function PaymentModal({ isOpen, onClose, defaultPlanId = 'pro_pac
         throw new Error(orderRes.message || 'Could not initiate payment order');
       }
 
-      const { orderId } = orderRes.data;
+      const { orderId, checkoutUrl } = orderRes.data;
 
-      // 2. Process / Verify payment (Simulated gateway verification with live server verification)
+      // If backend created an authentic Stripe Checkout Session, redirect to Stripe secure checkout
+      if (selectedGateway === 'stripe' && checkoutUrl) {
+        window.location.href = checkoutUrl;
+        return;
+      }
+
+      // 2. Process / Verify payment (Gateway verification with live server verification)
       await new Promise((resolve) => setTimeout(resolve, 1200));
 
       const verifyRes = await api.payment.verifyPayment(orderId, `pay_${selectedGateway}_${Date.now()}`);

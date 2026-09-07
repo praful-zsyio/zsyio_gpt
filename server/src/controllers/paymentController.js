@@ -124,6 +124,40 @@ export const createOrder = async (req, res, next) => {
             createdAt: new Date(),
         };
 
+        // If gateway is Stripe and secret key is provided, create hosted Stripe checkout session
+        if (gateway === 'stripe' && config.payment.stripeSecretKey) {
+            try {
+                const stripeRes = await fetch('https://api.stripe.com/v1/checkout/sessions', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${config.payment.stripeSecretKey}`,
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        'payment_method_types[0]': 'card',
+                        'line_items[0][price_data][currency]': (currency || selectedPlan.currency).toLowerCase(),
+                        'line_items[0][price_data][product_data][name]': `ZsyioGPT - ${selectedPlan.name}`,
+                        'line_items[0][price_data][product_data][description]': `${selectedPlan.credits.toLocaleString()} AI Credits`,
+                        'line_items[0][price_data][unit_amount]': String(Math.round(selectedPlan.price * 100)),
+                        'line_items[0][quantity]': '1',
+                        'mode': 'payment',
+                        'success_url': `${config.clientUrl}/usage?session_id={CHECKOUT_SESSION_ID}&order_id=${orderId}&status=success`,
+                        'cancel_url': `${config.clientUrl}/usage?payment_cancelled=true`,
+                        'metadata[orderId]': orderId,
+                        'metadata[userId]': String(userId),
+                        'metadata[credits]': String(selectedPlan.credits),
+                    }).toString(),
+                });
+                const stripeSession = await stripeRes.json();
+                if (stripeSession.url) {
+                    orderData.stripeSessionId = stripeSession.id;
+                    orderData.checkoutUrl = stripeSession.url;
+                }
+            } catch (stripeErr) {
+                console.warn('[Stripe Gateway] Could not initiate Stripe session:', stripeErr.message);
+            }
+        }
+
         paymentTransactions.set(orderId, orderData);
 
         res.status(201).json({
@@ -132,6 +166,7 @@ export const createOrder = async (req, res, next) => {
             data: {
                 ...orderData,
                 key: gateway === 'razorpay' ? config.payment.razorpayKeyId : config.payment.stripePublishableKey,
+                stripePublishableKey: config.payment.stripePublishableKey,
             }
         });
     } catch (error) {

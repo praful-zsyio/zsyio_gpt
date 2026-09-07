@@ -30,18 +30,12 @@ export default function UsagePage() {
           setStats(res.data);
         }
       } catch {
-        // Fallback demo stats
         setStats({
-          totalRequests: 48,
-          totalInputTokens: 38400,
-          totalOutputTokens: 62200,
-          estimatedCostUsd: 0.84,
-          byModel: [
-            { model: 'gpt-4o', count: 24, tokens: 45000 },
-            { model: 'claude-3-7-sonnet', count: 12, tokens: 28000 },
-            { model: 'gemini-2-flash', count: 10, tokens: 19000 },
-            { model: 'grok-2', count: 2, tokens: 8600 },
-          ],
+          totalRequests: 0,
+          totalInputTokens: 0,
+          totalOutputTokens: 0,
+          estimatedCostUsd: 0,
+          byModel: [],
         });
       }
     };

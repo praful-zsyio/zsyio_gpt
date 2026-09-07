@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 const AIModelSchema = new Schema({
-    provider: { type: String, enum: ['openai', 'anthropic', 'gemini', 'xai'], required: true },
+    provider: { type: String, enum: ['openai', 'anthropic', 'gemini', 'xai', 'firebase-ai'], required: true },
     modelId: { type: String, required: true, unique: true },
     displayName: { type: String, required: true },
     description: { type: String, default: '' },
@@ -24,6 +24,19 @@ const AIModelSchema = new Schema({
 export const AIModel = mongoose.model('AIModel', AIModelSchema);
 // Initial registry seed data
 export const DEFAULT_AI_MODELS = [
+    {
+        provider: 'firebase-ai',
+        modelId: 'gemini-3.7-flash',
+        displayName: 'Gemini 3.7 Flash',
+        description: 'Google Gemini 3.7 Flash model powered by Firebase GenAI SDK with GoogleAI & AgentPlatform backends.',
+        category: 'Firebase GenAI',
+        capabilities: { streaming: true, vision: true, functionCalling: true, webSearch: false, reasoning: true },
+        contextWindow: 1048576,
+        maxOutputTokens: 8192,
+        pricing: { inputPer1k: 0.0001, outputPer1k: 0.0004 },
+        enabled: true,
+        isDefault: false,
+    },
     {
         provider: 'openai',
         modelId: 'gpt-4o',

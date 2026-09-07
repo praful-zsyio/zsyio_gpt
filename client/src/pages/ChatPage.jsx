@@ -37,6 +37,7 @@ import {
 import { exportChatTranscript } from '../utils/downloader.js';
 
 const AVAILABLE_MODELS = [
+  { id: 'gemini-3.7-flash', name: 'Gemini 3.7 Flash', provider: 'Firebase GenAI', badge: 'Firebase SDK Native', color: 'from-amber-400 to-rose-500' },
   { id: 'gpt-4o', name: 'GPT-4o', provider: 'OpenAI', badge: 'Flagship Multimodal', color: 'from-emerald-400 to-cyan-500' },
   { id: 'claude-3-7-sonnet', name: 'Claude 3.7 Sonnet', provider: 'Anthropic', badge: 'Thinking Reasoning', color: 'from-amber-400 to-orange-500' },
   { id: 'gemini-2-flash', name: 'Gemini 2.0 Flash', provider: 'Google', badge: 'Ultra Fast Real-Time', color: 'from-blue-400 to-indigo-500' },

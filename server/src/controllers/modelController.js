@@ -23,6 +23,7 @@ export const getModels = async (_req, res, next) => {
             anthropic: Boolean(config.ai.anthropicApiKey),
             gemini: Boolean(config.ai.googleAiApiKey),
             xai: Boolean(config.ai.xaiApiKey),
+            'firebase-ai': Boolean(config.firebase.apiKey || config.ai.googleAiApiKey),
         };
         res.json({
             success: true,

@@ -29,30 +29,12 @@ export const AuthProvider = ({ children }) => {
         }
       }
 
-      // If still no user, fetch or establish guest session
+      // If no valid session token exists, user remains unauthenticated until real Google sign-in
       if (!getToken()) {
-        try {
-          const res = await api.auth.getGuestSession();
-          if (res.success && res.data) {
-            handleAuthSuccess(res.data.token, res.data.user);
-          }
-        } catch {
-          // Provide mock user if completely offline so the user can freely explore features immediately
-          const fallbackUser = {
-            id: 'guest_' + Date.now(),
-            name: 'Explorer User',
-            email: 'guest@zsyiogpt.ai',
-            role: 'user',
-            plan: 'free',
-            credits: 1000,
-            preferences: { theme: 'dark', defaultModel: 'gpt-4o' }
-          };
-          setUser(fallbackUser);
-        }
+        setUser(null);
       }
       setLoading(false);
     };
-
 
     initAuth();
   }, []);

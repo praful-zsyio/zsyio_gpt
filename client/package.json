@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "clsx": "^2.1.1",
-    "firebase": "^11.4.0",
+    "firebase": "^12.18.0",
     "framer-motion": "^11.18.2",
     "gsap": "^3.12.7",
     "jspdf": "^2.5.2",

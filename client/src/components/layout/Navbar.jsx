@@ -112,7 +112,7 @@ export default function Navbar() {
             </div>
 
             {/* Desktop User state */}
-            {isAuthenticated && user?.email !== 'guest@zsyiogpt.ai' ? (
+            {isAuthenticated && user ? (
               <div className="hidden sm:flex items-center gap-2">
                 <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-dark-900/80 border border-white/10">
                   {user.avatar ? (
@@ -181,7 +181,7 @@ export default function Navbar() {
 
             {/* User card in drawer */}
             <div className="my-4 p-3 rounded-2xl bg-dark-900/90 border border-white/10">
-              {isAuthenticated && user?.email !== 'guest@zsyiogpt.ai' ? (
+              {isAuthenticated && user ? (
                 <div className="space-y-2">
                   <div className="flex items-center gap-2.5">
                     {user.avatar ? (

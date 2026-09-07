@@ -4,6 +4,7 @@ import { AnthropicAdapter } from './adapters/AnthropicAdapter.js';
 import { GeminiAdapter } from './adapters/GeminiAdapter.js';
 import { XAIAdapter } from './adapters/XAIAdapter.js';
 import { MockAdapter } from './adapters/MockAdapter.js';
+import { FirebaseAIAdapter } from './adapters/FirebaseAIAdapter.js';
 class AIService {
     adapters = new Map();
     constructor() {
@@ -49,6 +50,13 @@ class AIService {
             this.adapters.set('nanobanana', expAdapter);
             this.adapters.set('nano-banana', expAdapter);
         }
+        // Firebase GenAI (GoogleAIBackend & AgentPlatformBackend)
+        if (config.firebase?.apiKey) {
+            const fbAIAdapter = new FirebaseAIAdapter();
+            this.adapters.set('firebase-ai', fbAIAdapter);
+            this.adapters.set('firebase', fbAIAdapter);
+            this.adapters.set('firebase-genai', fbAIAdapter);
+        }
     }
     getAdapter(providerName) {
         const adapter = this.adapters.get(providerName.toLowerCase());
@@ -66,6 +74,8 @@ class AIService {
             const m = resolvedModel.toLowerCase();
             if (m.includes('claude')) {
                 resolvedProvider = 'anthropic';
+            } else if (m.includes('3.7') || m.includes('firebase')) {
+                resolvedProvider = 'firebase-ai';
             } else if (m.includes('gemini')) {
                 resolvedProvider = 'gemini';
             } else if (m.includes('grok')) {
@@ -84,6 +94,8 @@ class AIService {
             else if (resolvedModel === 'claude-3-haiku') resolvedModel = 'claude-3-haiku-20240307';
         } else if (resolvedProvider === 'gemini') {
             if (resolvedModel === 'gemini-2-flash' || resolvedModel === 'gemini-2.0-flash-exp') resolvedModel = 'gemini-2.0-flash';
+        } else if (resolvedProvider === 'firebase-ai') {
+            if (resolvedModel.includes('3.7') || resolvedModel === 'gemini-3.7') resolvedModel = 'gemini-3.7-flash';
         } else if (resolvedProvider === 'xai') {
             if (resolvedModel === 'grok-2') resolvedModel = 'grok-2-latest';
         }
