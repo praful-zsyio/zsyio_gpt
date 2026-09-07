@@ -1,0 +1,444 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Support iOS Safe Areas (iPhone Dynamic Island / Notch / Home Indicator) */
+  .safe-top {
+    padding-top: max(1rem, env(safe-area-inset-top));
+  }
+  .safe-bottom {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+
+  /* Prevent iPhone iOS auto-zoom on input focus */
+  @media screen and (max-width: 768px) {
+    input, textarea, select {
+      font-size: 16px !important;
+    }
+  }
+
+  /* Dark Theme Default */
+  body.dark {
+    background: radial-gradient(circle at 50% 10%, rgba(56, 189, 248, 0.22) 0%, rgba(224, 242, 254, 0.06) 35%, #040c1a 75%),
+                linear-gradient(180deg, #06152b 0%, #030a16 100%);
+    background-attachment: fixed;
+    color: #F8FAFC;
+  }
+
+  /* Light Theme - Crisp Sky Blue & Pure White */
+  body.light {
+    background: radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.22) 0%, rgba(224, 242, 254, 0.6) 45%, #F0F9FF 80%, #FFFFFF 100%);
+    background-attachment: fixed;
+    color: #0F172A;
+  }
+
+  /* Custom Modern Scrollbars */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  body.dark ::-webkit-scrollbar-track {
+    background: #06152b;
+  }
+
+  body.light ::-webkit-scrollbar-track {
+    background: #f1f5f9;
+  }
+
+  body.dark ::-webkit-scrollbar-thumb {
+    background: rgba(56, 189, 248, 0.35);
+    border-radius: 9999px;
+  }
+
+  body.light ::-webkit-scrollbar-thumb {
+    background: rgba(14, 165, 233, 0.45);
+    border-radius: 9999px;
+  }
+}
+
+/* ==========================================================
+   DYNAMIC DARK & LIGHT THEME CONTENT SYSTEM
+   ========================================================== */
+
+/* Global Smooth Color Transition */
+*, *::before, *::after {
+  transition-property: background-color, border-color, color, fill, stroke, box-shadow;
+  transition-duration: 200ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Glass Panels */
+body.dark .glass-panel {
+  background: rgba(14, 28, 52, 0.72);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 12px 40px 0 rgba(2, 132, 199, 0.18), inset 0 1px 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+body.light .glass-panel {
+  background: rgba(255, 255, 255, 0.90) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(56, 189, 248, 0.35) !important;
+  box-shadow: 0 10px 30px -5px rgba(2, 132, 199, 0.12), inset 0 1px 2px 0 rgba(255, 255, 255, 0.95) !important;
+  color: #0F172A !important;
+}
+
+body.dark .glass-panel-white {
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 16px 48px 0 rgba(56, 189, 248, 0.2);
+}
+
+body.light .glass-panel-white {
+  background: rgba(255, 255, 255, 0.96) !important;
+  backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
+  border: 1px solid rgba(186, 230, 253, 0.95) !important;
+  box-shadow: 0 16px 40px -8px rgba(2, 132, 199, 0.14) !important;
+  color: #0F172A !important;
+}
+
+/* Adaptive Typography Classes */
+body.dark .text-adaptive {
+  color: #F8FAFC;
+}
+
+body.light .text-adaptive {
+  color: #0F172A !important;
+}
+
+body.dark .text-adaptive-muted {
+  color: #94A3B8;
+}
+
+body.light .text-adaptive-muted {
+  color: #475569 !important;
+}
+
+/* Adaptive Input Class */
+body.dark .bg-adaptive-input {
+  background-color: rgba(15, 23, 42, 0.7);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #F8FAFC;
+}
+
+body.light .bg-adaptive-input {
+  background-color: #FFFFFF !important;
+  border-color: rgba(56, 189, 248, 0.45) !important;
+  color: #0F172A !important;
+  box-shadow: 0 1px 3px rgba(14, 165, 233, 0.08) !important;
+}
+
+/* Cyber Gradient Text */
+.text-cyber-gradient {
+  background: linear-gradient(135deg, #0284C7 0%, #0284C7 20%, #38BDF8 60%, #0EA5E9 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+body.dark .text-cyber-gradient {
+  background: linear-gradient(135deg, #FFFFFF 0%, #BAE6FD 30%, #38BDF8 70%, #0284C7 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+body.light .text-cyber-gradient {
+  background: linear-gradient(135deg, #0369A1 0%, #0284C7 35%, #0EA5E9 70%, #0369A1 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+/* ----------------------------------------------------------
+   LIGHT THEME: DYNAMIC CONTENT COLOR INVERSION & POLISH
+   ---------------------------------------------------------- */
+
+/* Headings in Light Mode */
+body.light h1,
+body.light h2,
+body.light h3,
+body.light h4,
+body.light h5,
+body.light h6 {
+  color: #0F172A !important;
+}
+
+/* Transform generic text-white to crisp dark slate, excluding solid colored buttons */
+body.light .text-white:not(
+  button[class*="bg-gradient-to"],
+  button[class*="from-sky"],
+  button[class*="bg-sky-5"],
+  button[class*="bg-sky-6"],
+  button[class*="bg-blue"],
+  button[class*="bg-emerald"],
+  button[class*="bg-red"],
+  button[class*="bg-purple"],
+  button[class*="bg-indigo"],
+  a[class*="bg-gradient-to"],
+  a[class*="bg-sky-6"],
+  .keep-white,
+  [class*="keep-white"]
+) {
+  color: #0F172A !important;
+}
+
+/* Muted Grays -> High-contrast readable slates */
+body.light .text-gray-100,
+body.light .text-gray-200,
+body.light .text-slate-100,
+body.light .text-slate-200 {
+  color: #1E293B !important;
+}
+
+body.light .text-gray-300,
+body.light .text-slate-300 {
+  color: #334155 !important;
+}
+
+body.light .text-gray-400,
+body.light .text-slate-400 {
+  color: #475569 !important;
+}
+
+body.light .text-gray-500,
+body.light .text-slate-500 {
+  color: #64748B !important;
+}
+
+/* High-contrast Sky Blues: Pale cyan becomes vibrant ocean blue on white */
+body.light .text-sky-100,
+body.light .text-sky-200,
+body.light .text-sky-300 {
+  color: #0284C7 !important;
+}
+
+body.light .text-cyan-200,
+body.light .text-cyan-300 {
+  color: #0369A1 !important;
+}
+
+/* Dynamic Dark Containers -> Clean Light Surfaces */
+body.light .bg-slate-900,
+body.light .bg-slate-950,
+body.light .bg-slate-900\/40,
+body.light .bg-slate-900\/50,
+body.light .bg-slate-900\/60,
+body.light .bg-slate-900\/70,
+body.light .bg-slate-900\/80,
+body.light .bg-slate-900\/90 {
+  background-color: rgba(255, 255, 255, 0.92) !important;
+  color: #0F172A !important;
+  border-color: rgba(186, 230, 253, 0.85) !important;
+}
+
+body.light .bg-slate-800,
+body.light .bg-slate-800\/60,
+body.light .bg-slate-800\/80 {
+  background-color: rgba(240, 249, 255, 0.85) !important;
+  color: #0F172A !important;
+  border-color: rgba(56, 189, 248, 0.25) !important;
+}
+
+/* Black translucent backdrops in dark mode -> soft sky backdrops in light mode */
+body.light .bg-black\/20,
+body.light .bg-black\/30,
+body.light .bg-black\/40 {
+  background-color: rgba(240, 249, 255, 0.8) !important;
+  border-color: rgba(56, 189, 248, 0.25) !important;
+}
+
+/* White translucent chips (bg-white/5, bg-white/10) */
+body.light .bg-white\/5,
+body.light .bg-white\/10 {
+  background-color: rgba(224, 242, 254, 0.6) !important;
+  color: #0F172A !important;
+  border-color: rgba(56, 189, 248, 0.3) !important;
+}
+
+body.light .bg-white\/15,
+body.light .bg-white\/20 {
+  background-color: rgba(186, 230, 253, 0.5) !important;
+  color: #0F172A !important;
+}
+
+/* Dynamic Borders */
+body.light .border-white\/10,
+body.light .border-white\/15,
+body.light .border-white\/20,
+body.light .border-white\/25,
+body.light .border-white\/30 {
+  border-color: rgba(14, 165, 233, 0.25) !important;
+}
+
+/* Dynamic Inputs, Textareas & Selects */
+body.light input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+body.light textarea,
+body.light select {
+  background-color: #FFFFFF !important;
+  color: #0F172A !important;
+  border-color: rgba(56, 189, 248, 0.45) !important;
+  box-shadow: 0 1px 3px rgba(14, 165, 233, 0.08) !important;
+}
+
+body.light input::placeholder,
+body.light textarea::placeholder {
+  color: #64748B !important;
+}
+
+body.light input:focus,
+body.light textarea:focus,
+body.light select:focus {
+  border-color: #0284C7 !important;
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25) !important;
+}
+
+/* Dynamic Code & Pre tags */
+body.light pre,
+body.light code:not(pre code) {
+  background-color: #F1F5F9 !important;
+  color: #0F172A !important;
+  border-color: #E2E8F0 !important;
+}
+
+/* Dropdowns & Menus */
+body.light [role="menu"],
+body.light .dropdown-menu {
+  background-color: rgba(255, 255, 255, 0.98) !important;
+  color: #0F172A !important;
+  border-color: rgba(186, 230, 253, 0.9) !important;
+  box-shadow: 0 20px 45px rgba(2, 132, 199, 0.16) !important;
+}
+
+/* Slide Stage in Presentation Generator */
+body.light .aspect-\[16\/9\] {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.96) 0%, rgba(240, 249, 255, 0.94) 50%, rgba(224, 242, 254, 0.92) 100%) !important;
+  border-color: rgba(56, 189, 248, 0.4) !important;
+}
+
+/* Spotlight Card effect */
+.spotlight-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.spotlight-card::before {
+  content: '';
+  position: absolute;
+  top: var(--mouse-y, -1000px);
+  left: var(--mouse-x, -1000px);
+  width: 450px;
+  height: 450px;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.22) 0%, rgba(255, 255, 255, 0.08) 40%, transparent 70%);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  opacity: 0;
+}
+
+.spotlight-card:hover::before {
+  opacity: 1;
+}
+
+/* ==========================================================
+   DEVICE-SPECIFIC RESPONSIVE CUSTOMIZATIONS
+   Mobile (iPhone / Android) | Tablet (iPad / Pad) | Laptop / Desktop
+   ========================================================== */
+
+/* 1. Mobile & iPhone (< 640px) */
+@media screen and (max-width: 639px) {
+  /* Safe notch and home indicator spacing for iPhone X/11/12/13/14/15/16 */
+  body {
+    padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+  }
+
+  /* Full-width edge-to-edge Navbar with safe area for iPhone */
+  header {
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+    padding-top: max(0.6rem, env(safe-area-inset-top)) !important;
+    border-radius: 0 !important;
+  }
+
+  /* Accessible touch buttons (minimum 40-44px target) */
+  button, a {
+    min-height: 38px;
+    touch-action: manipulation;
+  }
+
+  /* Ensure text bubbles and cards wrap gracefully on narrow screens */
+  .chat-bubble-user, .chat-bubble-ai {
+    max-width: 92% !important;
+  }
+
+  /* Compact padding in studio & profile for single-column mobile view */
+  .studio-container, .profile-container {
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+    padding-top: 5rem !important;
+  }
+}
+
+/* 2. iPad & Pad / Tablet (640px to 1024px) */
+@media screen and (min-width: 640px) and (max-width: 1024px) {
+  /* Optimized grid and card layouts for iPad in Portrait and Landscape */
+  .ipad-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  header {
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+    border-radius: 0 !important;
+  }
+
+  /* Tablet touch friendliness */
+  button {
+    touch-action: manipulation;
+  }
+}
+
+/* 3. Laptop & Large Screens (>= 1025px) */
+@media screen and (min-width: 1025px) {
+  /* Full expanded cockpit workspace on desktop */
+  .desktop-container {
+    max-width: 1200px;
+  }
+}
+
+/* 4. Disable sticky hover states on touch screens (iPhone / iPad) */
+@media (hover: none) {
+  .spotlight-card:hover::before {
+    display: none;
+  }
+  button:hover {
+    transform: none !important;
+  }
+}
+

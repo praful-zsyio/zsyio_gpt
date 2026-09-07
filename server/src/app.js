@@ -108,8 +108,12 @@ app.use('/api/v1', apiRouter);
 
 // Serve frontend static build in production
 const candidateDistDirs = [
+    path.resolve(process.cwd(), 'frontend', 'dist'),
+    path.resolve(process.cwd(), '../frontend/dist'),
     path.resolve(process.cwd(), 'client', 'dist'),
     path.resolve(process.cwd(), '../client/dist'),
+    path.resolve(__dirname, '../../../frontend/dist'),
+    path.resolve(__dirname, '../../frontend/dist'),
     path.resolve(__dirname, '../../../client/dist'),
     path.resolve(__dirname, '../../client/dist'),
 ];

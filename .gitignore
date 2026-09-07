@@ -17,6 +17,7 @@ server/dist/
 .env.production.local
 server/.env
 client/.env
+frontend/.env
 
 # Logs
 npm-debug.log*

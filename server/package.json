@@ -4,7 +4,8 @@
   "description": "ZsyioGPT Backend API & AI Gateway",
   "main": "src/app.js",
   "scripts": {
-    "dev": "nodemon src/app.js",
+    "dev": "nodemon --watch src src/app.js",
+    "dev:nodemon": "nodemon src/app.js",
     "start": "node src/app.js",
     "build": "echo 'No build step required'"
   },
@@ -18,9 +19,10 @@
     "express": "^4.21.2",
     "firebase": "^12.18.0",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.12.0",
+    "mongoose": "^8.24.4",
     "multer": "^2.3.0",
-    "openai": "^4.86.1",
+    "nodemailer": "^10.0.0",
+    "openai": "^4.104.0",
     "zod": "^3.24.2"
   },
   "devDependencies": {

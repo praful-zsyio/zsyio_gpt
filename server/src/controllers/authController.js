@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { User } from '../models/User.js';
 import { config } from '../config/env.js';
 import { memoryStore } from '../services/store/memoryStore.js';
+import { sendAuthWelcomeEmail } from '../services/email/emailService.js';
 export const registerSchema = z.object({
     name: z.string().min(2, 'Name must be at least 2 characters'),
     email: z.string().email('Invalid email address'),
@@ -46,6 +47,15 @@ export const register = async (req, res, next) => {
                 secure: config.env === 'production',
                 maxAge: 7 * 24 * 60 * 60 * 1000,
             });
+            sendAuthWelcomeEmail({
+                email: lowerEmail,
+                name: user.name,
+                uid: user._id.toString(),
+                provider: 'Email & Password',
+                credits: user.credits || 1000,
+                plan: 'Free Starter Plan',
+            }).catch((err) => console.warn('[Email] Welcome email error:', err.message));
+
             res.status(201).json({
                 success: true,
                 message: 'Account created successfully',
@@ -99,6 +109,15 @@ export const register = async (req, res, next) => {
                 secure: config.env === 'production',
                 maxAge: 7 * 24 * 60 * 60 * 1000,
             });
+            sendAuthWelcomeEmail({
+                email: lowerEmail,
+                name: user.name,
+                uid: id,
+                provider: 'Email & Password',
+                credits: user.credits || 1000,
+                plan: 'Free Starter Plan',
+            }).catch((err) => console.warn('[Email] Welcome email error:', err.message));
+
             res.status(201).json({
                 success: true,
                 message: 'Account created successfully',
@@ -273,12 +292,14 @@ export const logout = async (_req, res) => {
 
 export const firebaseAuth = async (req, res, next) => {
     try {
-        const { email, name, avatar, uid } = req.body;
+        const { email, name, avatar, uid, displayName, photoURL } = req.body;
         if (!email) {
             res.status(400).json({ success: false, message: 'Email is required from Firebase' });
             return;
         }
         const lowerEmail = email.toLowerCase();
+        const finalName = name || displayName || email.split('@')[0];
+        const finalAvatar = avatar || photoURL || '';
         let user;
 
         if (memoryStore.isMongoAvailable) {
@@ -287,15 +308,20 @@ export const firebaseAuth = async (req, res, next) => {
                 const salt = await bcrypt.genSalt(10);
                 const dummyPassword = await bcrypt.hash(uid || Math.random().toString(36), salt);
                 user = await User.create({
-                    name: name || email.split('@')[0],
+                    name: finalName,
                     email: lowerEmail,
                     passwordHash: dummyPassword,
-                    avatar: avatar || '',
+                    avatar: finalAvatar,
                     credits: 1000,
                     role: 'user',
                     plan: 'free',
                     emailVerified: true,
                 });
+            } else {
+                if (finalAvatar && !user.avatar) {
+                    user.avatar = finalAvatar;
+                    await user.save();
+                }
             }
         } else {
             // Check in memory store
@@ -303,9 +329,9 @@ export const firebaseAuth = async (req, res, next) => {
             if (!user) {
                 user = {
                     _id: uid || 'mem_fb_' + Date.now(),
-                    name: name || email.split('@')[0],
+                    name: finalName,
                     email: lowerEmail,
-                    avatar: avatar || '',
+                    avatar: finalAvatar,
                     role: 'user',
                     plan: 'free',
                     credits: 1000,
@@ -318,6 +344,8 @@ export const firebaseAuth = async (req, res, next) => {
                     updatedAt: new Date(),
                 };
                 memoryStore.users.set(user._id, user);
+            } else {
+                if (finalAvatar && !user.avatar) user.avatar = finalAvatar;
             }
         }
 
@@ -331,6 +359,17 @@ export const firebaseAuth = async (req, res, next) => {
             maxAge: 7 * 24 * 60 * 60 * 1000,
         });
 
+        // Send welcome email with Google shared profile data
+        sendAuthWelcomeEmail({
+            email: lowerEmail,
+            name: user.name || finalName,
+            avatar: user.avatar || finalAvatar,
+            uid: userId,
+            provider: 'Google',
+            credits: user.credits || 1000,
+            plan: user.plan === 'pro' ? 'Pro Workspace' : 'Free Starter Plan',
+        }).catch((err) => console.warn('[Email] Firebase welcome email notice:', err.message));
+
         res.json({
             success: true,
             message: 'Firebase authentication successful',
@@ -339,12 +378,13 @@ export const firebaseAuth = async (req, res, next) => {
                 refreshToken,
                 user: {
                     id: userId,
-                    name: user.name,
+                    name: user.name || finalName,
                     email: user.email,
                     role: user.role,
                     plan: user.plan,
                     credits: user.credits,
-                    avatar: user.avatar,
+                    avatar: user.avatar || finalAvatar,
+                    photoURL: user.avatar || finalAvatar,
                     preferences: user.preferences,
                 },
             },

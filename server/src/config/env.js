@@ -62,6 +62,16 @@ export const config = {
         stripePublishableKey: (process.env.STRIPE_PUBLISHABLE_KEY || '').trim(),
         razorpayKeyId: (process.env.RAZORPAY_KEY_ID || '').trim(),
         razorpayKeySecret: (process.env.RAZORPAY_KEY_SECRET || '').trim(),
+    },
+    email: {
+        host: process.env.SMTP_HOST || 'smtp.gmail.com',
+        port: parseInt(process.env.SMTP_PORT || '587', 10),
+        secure: process.env.SMTP_SECURE === 'true',
+        user: (process.env.SMTP_USER || '').trim(),
+        pass: (process.env.SMTP_PASS || '').trim(),
+        fromName: process.env.SMTP_FROM_NAME || 'ZsyioGPT',
+        fromEmail: process.env.SMTP_FROM_EMAIL || 'noreply@zsyiogpt.com',
+        ownerEmail: (process.env.OWNER_EMAIL || '').trim(),
     }
 };
 
