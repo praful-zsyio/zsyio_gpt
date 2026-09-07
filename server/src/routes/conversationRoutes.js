@@ -1,10 +1,11 @@
 import { Router } from 'express';
-import { getConversations, getConversationById, createConversation, updateConversation, deleteConversation, } from '../controllers/conversationController.js';
+import { getConversations, getConversationById, createConversation, updateConversation, deleteConversation, deleteAllConversations } from '../controllers/conversationController.js';
 import { authenticate } from '../middleware/auth.js';
 const router = Router();
 router.use(authenticate);
 router.get('/', getConversations);
 router.post('/', createConversation);
+router.delete('/', deleteAllConversations);
 router.get('/:id', getConversationById);
 router.patch('/:id', updateConversation);
 router.delete('/:id', deleteConversation);

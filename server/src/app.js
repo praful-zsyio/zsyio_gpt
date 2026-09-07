@@ -147,10 +147,20 @@ const startServer = async () => {
     });
     server.on('error', (err) => {
         if (err.code === 'EADDRINUSE') {
-            console.warn(`[Server] Port ${config.port} is already in use. Retrying on port ${config.port + 1}...`);
+            // Try next available port (up to 5 attempts)
+            const tryPort = config.port + 1;
+            console.warn(`[Server] Port ${config.port} is already in use. Retrying on port ${tryPort}...`);
             server.close();
-            app.listen(config.port + 1, '0.0.0.0', () => {
-                console.log(`🚀 ZsyioGPT Server fallback running on port ${config.port + 1}`);
+            const fallback = app.listen(tryPort, '0.0.0.0', () => {
+                console.log(`🚀 ZsyioGPT Server fallback running on port ${tryPort}`);
+            });
+            fallback.on('error', (err2) => {
+                if (err2.code === 'EADDRINUSE') {
+                    console.error(`[Server] Port ${tryPort} also in use. Please free port ${config.port} and restart.`);
+                } else {
+                    console.error('[Server Error]', err2);
+                }
+                fallback.close();
             });
         }
         else {

@@ -160,3 +160,32 @@ export const deleteConversation = async (req, res, next) => {
         next(error);
     }
 };
+
+export const deleteAllConversations = async (req, res, next) => {
+    try {
+        const userId = req.userId || 'demo-user-1';
+        if (memoryStore.isMongoAvailable) {
+            const userConvs = await Conversation.find({ userId }).select('_id');
+            const convIds = userConvs.map(c => c._id);
+            await Message.deleteMany({ conversationId: { $in: convIds } });
+            await Conversation.deleteMany({ userId });
+            res.json({ success: true, message: 'All database conversations cleaned successfully' });
+            return;
+        }
+        // In-memory cleanup
+        for (const [id, conv] of memoryStore.conversations) {
+            if (conv.userId === userId) {
+                memoryStore.conversations.delete(id);
+            }
+        }
+        for (const [msgId, msg] of memoryStore.messages) {
+            if (msg.userId === userId) {
+                memoryStore.messages.delete(msgId);
+            }
+        }
+        res.json({ success: true, message: 'All conversations cleaned successfully from memory store' });
+    }
+    catch (error) {
+        next(error);
+    }
+};

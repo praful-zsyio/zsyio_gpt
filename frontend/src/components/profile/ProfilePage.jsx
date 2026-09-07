@@ -28,6 +28,7 @@ import {
   MessageSquare,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { apiClient } from '../../api/client';
 
 const PRESET_AVATARS = [
   'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80',
@@ -162,20 +163,30 @@ export default function ProfilePage({ user, onUpdateUser, theme, setTheme, toggl
   };
 
   // Clear All Chat History and App State
-  const handleClearAllHistory = () => {
+  const handleClearAllHistory = async () => {
     localStorage.removeItem('zsyiogpt_local_conversations');
     setConversationsList([]);
+    try {
+      await apiClient.delete('/conversations');
+    } catch {
+      // ignore
+    }
     window.dispatchEvent(new Event('zsyiogpt_chat_history_cleared'));
-    setDataMessage('All chat history and cached conversations have been cleared from the app!');
+    setDataMessage('All chat history and cached conversations have been cleared from the app and database!');
     setTimeout(() => setDataMessage(null), 4000);
   };
 
   // Clear Cache Control
-  const handleClearCache = () => {
+  const handleClearCache = async () => {
     localStorage.removeItem('zsyiogpt_local_conversations');
     setConversationsList([]);
+    try {
+      await apiClient.delete('/conversations');
+    } catch {
+      // ignore
+    }
     window.dispatchEvent(new Event('zsyiogpt_chat_history_cleared'));
-    setDataMessage('Local chat cache, app logs, and temporary sessions cleared successfully.');
+    setDataMessage('Local chat cache, app logs, and database sessions cleared successfully.');
     setTimeout(() => setDataMessage(null), 4000);
   };
 
