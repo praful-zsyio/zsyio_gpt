@@ -13,8 +13,8 @@ import {
 } from 'lucide-react';
 import {
   auth,
-  GoogleAuthProvider,
-  signInWithCredential,
+  googleProvider,
+  signInWithPopup,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
 } from '../../config/firebase';
@@ -41,76 +41,19 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialMode 
 
   if (!isOpen) return null;
 
-  // 1. Google Sign-In using Google Identity Services (GIS) — bypasses Firebase domain restrictions
+  // 1. Google Sign-In with Firebase
   const handleGoogleSignIn = async () => {
     setLoading(true);
     setError(null);
     try {
-      // Use GIS to get an ID token from Google directly (no Firebase authDomain popup)
-      const idToken = await new Promise((resolve, reject) => {
-        if (typeof window.google === 'undefined' || !window.google?.accounts?.id) {
-          reject(new Error('Google Sign-In is loading. Please try again in a moment.'));
-          return;
-        }
-
-        window.google.accounts.id.initialize({
-          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || '866726181668-YOUR_WEB_CLIENT_ID.apps.googleusercontent.com',
-          callback: (response) => {
-            if (response.credential) {
-              resolve(response.credential);
-            } else {
-              reject(new Error('Google sign-in did not return a credential.'));
-            }
-          },
-          auto_select: false,
-          cancel_on_tap_outside: true,
-        });
-
-        // Trigger the One Tap / popup prompt
-        window.google.accounts.id.prompt((notification) => {
-          if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-            // Fallback: render the button-click flow
-            const tempDiv = document.createElement('div');
-            tempDiv.style.position = 'fixed';
-            tempDiv.style.top = '50%';
-            tempDiv.style.left = '50%';
-            tempDiv.style.transform = 'translate(-50%, -50%)';
-            tempDiv.style.zIndex = '99999';
-            document.body.appendChild(tempDiv);
-
-            window.google.accounts.id.renderButton(tempDiv, {
-              type: 'standard',
-              theme: 'outline',
-              size: 'large',
-              text: 'signin_with',
-              shape: 'rectangular',
-            });
-
-            // Auto-click the rendered button
-            setTimeout(() => {
-              const btn = tempDiv.querySelector('[role="button"]') || tempDiv.querySelector('div[tabindex]');
-              if (btn) btn.click();
-              // Clean up after a delay
-              setTimeout(() => {
-                if (document.body.contains(tempDiv)) {
-                  document.body.removeChild(tempDiv);
-                }
-              }, 60000);
-            }, 100);
-          }
-        });
-      });
-
-      // Convert GIS token to Firebase credential and sign in
-      const credential = GoogleAuthProvider.credential(idToken);
-      const result = await signInWithCredential(auth, credential);
+      const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
-      const firebaseIdToken = await user.getIdToken();
+      const idToken = await user.getIdToken();
 
       // Sync with backend /api/v1/auth/firebase
       try {
         const res = await apiClient.post('/auth/firebase', {
-          idToken: firebaseIdToken,
+          idToken,
           email: user.email,
           displayName: user.displayName,
           name: user.displayName,
@@ -153,7 +96,11 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialMode 
       onClose();
     } catch (err) {
       console.error('Google Sign-In Error:', err);
-      setError(err.message || 'Google sign-in could not be completed.');
+      if (err.code === 'auth/unauthorized-domain') {
+        setError("Domain not authorized in Firebase. Please add 'localhost' to Authorized Domains in Firebase Console (Authentication > Settings > Authorized domains) with support email prafulsonwane58@gmail.com, or log in with Email & Password below.");
+      } else {
+        setError(err.message || 'Google sign-in could not be completed.');
+      }
     } finally {
       setLoading(false);
     }

@@ -4,6 +4,7 @@ import {
   Sparkles, Bot, Wand2, Zap, ShieldCheck, Globe2, Cpu, Layers,
   ArrowRight, Play, Star, Code, FileText, Film, Music, ChevronDown,
   CheckCircle2, MessageSquare, Brain, Infinity, Box,
+  Phone, Mail, Globe, ExternalLink,
 } from 'lucide-react';
 import BrandLogo from '../common/BrandLogo';
 
@@ -539,11 +540,135 @@ export default function LandingPage({ onOpenAuth, theme }) {
       </section>
 
       {/* ══════════════ FOOTER ══════════════ */}
-      <footer className="py-8 px-4 border-t border-white/10 text-center text-xs text-adaptive-muted">
-        <div className="flex items-center justify-center gap-2 mb-2">
-          <BrandLogo size="sm" withText />
+      <footer className="py-14 px-4 sm:px-8 lg:px-16 border-t border-white/10 bg-slate-950/60 backdrop-blur-xl relative">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+          {/* Col 1: Brand & Creation info */}
+          <div className="md:col-span-2 space-y-4">
+            <div className="flex items-center gap-3">
+              <BrandLogo size="md" withText />
+            </div>
+            <p className="text-sm text-adaptive-muted max-w-md leading-relaxed">
+              Unified AI & Media Gateway powering next-generation LLM chat, generative video pipelines, interactive voice synthesis, and dynamic document intelligence.
+            </p>
+            <div className="pt-2 flex flex-wrap items-center gap-2">
+              <span className="text-xs text-adaptive-muted font-medium">Created by</span>
+              <a
+                href="https://zsyio.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-500/15 border border-sky-400/30 text-sky-300 hover:bg-sky-500/25 text-xs font-semibold transition-all hover:scale-105"
+              >
+                <Globe className="w-3.5 h-3.5 text-sky-400" />
+                <span>zsyio</span>
+                <ExternalLink className="w-3 h-3 text-sky-400/80" />
+              </a>
+              <span className="text-xs text-adaptive-muted">|</span>
+              <a
+                href="https://zsyio.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-sky-400 hover:underline"
+              >
+                zsyio.com
+              </a>
+            </div>
+          </div>
+
+          {/* Col 2: Direct Contact Details */}
+          <div className="space-y-3">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-sky-400 font-mono">
+              Contact & Support
+            </h4>
+            <ul className="space-y-2.5 text-xs text-adaptive-muted">
+              <li>
+                <a
+                  href="tel:+919302433799"
+                  className="flex items-center gap-2.5 hover:text-sky-300 transition-colors group"
+                >
+                  <span className="p-1.5 rounded-lg bg-white/5 border border-white/10 group-hover:border-sky-400/40 transition-colors">
+                    <Phone className="w-3.5 h-3.5 text-sky-400" />
+                  </span>
+                  <span>+91 9302433799</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="mailto:contact@zsyio.com"
+                  className="flex items-center gap-2.5 hover:text-sky-300 transition-colors group"
+                >
+                  <span className="p-1.5 rounded-lg bg-white/5 border border-white/10 group-hover:border-sky-400/40 transition-colors">
+                    <Mail className="w-3.5 h-3.5 text-sky-400" />
+                  </span>
+                  <span>contact@zsyio.com</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://zsyio.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2.5 hover:text-sky-300 transition-colors group"
+                >
+                  <span className="p-1.5 rounded-lg bg-white/5 border border-white/10 group-hover:border-sky-400/40 transition-colors">
+                    <Globe className="w-3.5 h-3.5 text-sky-400" />
+                  </span>
+                  <span>zsyio.com</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          {/* Col 3: Platform Features */}
+          <div className="space-y-3">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-sky-400 font-mono">
+              Platform
+            </h4>
+            <ul className="space-y-2 text-xs text-adaptive-muted">
+              <li>
+                <button
+                  onClick={() => onOpenAuth('signup')}
+                  className="hover:text-sky-300 transition-colors text-left"
+                >
+                  Multi-LLM Intelligence
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => onOpenAuth('signup')}
+                  className="hover:text-sky-300 transition-colors text-left"
+                >
+                  Neural Video Studio
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => onOpenAuth('signup')}
+                  className="hover:text-sky-300 transition-colors text-left"
+                >
+                  Document & PDF Studio
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => onOpenAuth('signup')}
+                  className="hover:text-sky-300 transition-colors text-left"
+                >
+                  Voice & Audio Generation
+                </button>
+              </li>
+            </ul>
+          </div>
         </div>
-        <p>© 2026 ZsyioGPT — Unified AI & Media Gateway. All rights reserved.</p>
+
+        {/* Bottom Bar */}
+        <div className="max-w-7xl mx-auto pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-adaptive-muted">
+          <p>© 2026 ZsyioGPT. All rights reserved. Created by <a href="https://zsyio.com" target="_blank" rel="noopener noreferrer" className="text-sky-400 hover:underline font-semibold">zsyio</a>.</p>
+          <div className="flex items-center gap-6">
+            <a href="https://zsyio.com" target="_blank" rel="noopener noreferrer" className="hover:text-sky-400 transition-colors">Official Website</a>
+            <a href="mailto:contact@zsyio.com" className="hover:text-sky-400 transition-colors">Support</a>
+            <a href="tel:+919302433799" className="hover:text-sky-400 transition-colors">Tel: 9302433799</a>
+          </div>
+        </div>
       </footer>
     </div>
   );
