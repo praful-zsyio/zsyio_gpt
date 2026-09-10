@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import Background3D from './components/3d/Background3D';
+import VideoBackground from './components/background/VideoBackground';
 import Navbar from './components/layout/Navbar';
 import LandingPage from './components/landing/LandingPage';
 import ChatCockpit from './components/chat/ChatCockpit';
@@ -157,8 +157,8 @@ export default function App() {
 
   return (
     <div className="relative min-h-screen flex flex-col selection:bg-sky-400/40 selection:text-white">
-      {/* 3D Interactive Background Element in Sky Blue & White */}
-      <Background3D theme={theme} />
+      {/* Fullscreen Muted Background Video */}
+      <VideoBackground theme={theme} />
 
       {/* Floating Glassmorphic Navbar */}
       <Navbar
