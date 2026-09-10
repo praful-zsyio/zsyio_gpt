@@ -72,6 +72,12 @@ export const config = {
         fromName: process.env.SMTP_FROM_NAME || 'ZsyioGPT',
         fromEmail: process.env.SMTP_FROM_EMAIL || 'noreply@zsyiogpt.com',
         ownerEmail: (process.env.OWNER_EMAIL || '').trim(),
+    },
+    supabase: {
+        projectName: (process.env.SUPABASE_PROJECT_NAME || 'Zsyio_GPT').trim(),
+        apiKey: (process.env.SUPABASE_API_KEY || process.env.SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_ANON_KEY || '').trim(),
+        publishableKey: (process.env.SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_API_KEY || '').trim(),
+        dbPassword: (process.env.SUPABASE_DB_PASSWORD || '').trim(),
     }
 };
 
